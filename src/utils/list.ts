@@ -16,3 +16,15 @@ export const navList = [
     url: "/profile",
   },
 ];
+
+export const dummyAnswer = [
+  {
+    answer: 'Bill Gates'
+  },
+  {
+    answer: 'Cryptocurrency'
+  },
+  {
+    answer: 'Jeff Bezos'
+  }
+]
