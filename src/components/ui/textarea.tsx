@@ -6,7 +6,7 @@ import { cn } from "../../lib/utils";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 
 export interface TextAreaProps
-    extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+    extends React.TextareaHTMLAttributes<HTMLTextAreaElement> { }
 
 const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ({ className, ...props }, ref) => {

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { cn } from "../../lib/utils";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -22,28 +21,34 @@ const mainVariant = {
 };
 
 interface FileUploadProps {
-    onChange?: (file: File | null) => void; // Accepts a single file or null
-    fileType: string; // Assuming fileType is a required prop
+    updateCourse: (fileName: string) => void;
+    fileType: string;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({ onChange, fileType }) => {
-    const [file, setFile] = useState<File | null>(null); // Changed to a single file state
+export const FileUpload: React.FC<FileUploadProps> = ({ updateCourse, fileType }) => {
+    const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (newFiles: File[]) => {
         if (newFiles.length > 0) {
-            const selectedFile = newFiles[0]; // Only take the first file
+            const selectedFile = newFiles[0];
+            const allowedTypes = ['image/jpeg', 'image/png', 'video/mp4'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                return;
+            }
             setFile(selectedFile);
-            onChange && onChange(selectedFile);
+            console.log(selectedFile.name);
+            updateCourse(selectedFile.name);
         }
     };
+
 
     const handleClick = () => {
         fileInputRef.current?.click();
     };
 
     const { getRootProps, isDragActive } = useDropzone({
-        multiple: false,
+        multiple: false, // Allow only single file upload
         noClick: true,
         onDrop: handleFileChange,
         onDropRejected: (error) => {
@@ -51,7 +56,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onChange, fileType }) =>
         },
     });
 
-    const radius = 100; // Change this to increase the radius of the hover effect
+    const radius = 100;
     const [visible, setVisible] = React.useState(false);
 
     let mouseX = useMotionValue(0);

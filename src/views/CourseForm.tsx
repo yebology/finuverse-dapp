@@ -1,34 +1,73 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { TextArea } from "../components/ui/textarea";
+import { BottomGradient } from "../components/ui/bottom-gradient";
 import { FileUpload } from "../components/ui/file-upload";
-import { cn } from "../lib/utils";
+import SectionAccordion from "../components/ui/accordion-section";
+import QuestionAccordion from "../components/ui/accordion-question";
+import LabelInputContainer from "../components/ui/label-input-container";
+import Swal from 'sweetalert2'
 
 export function CourseForm() {
 
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(0);
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  interface Course {
+    id: number;
+    name: string;
+    creator: string;
+    description: string;
+    price: number;
+    buyer: number;
+    thumbnail: string;
+    section_title: [string, string, string];
+    section_description: [string, string, string];
+    section_duration: [number, number, number];
+    section_video: [string, string, string];
+    question_list: [string, string, string];
+    answer_list: [string, string, string];
+    first_answer_options: [string, string, string, string];
+    second_answer_options: [string, string, string, string];
+    third_answer_options: [string, string, string, string];
+  }
 
-  const [sectionTitle_1, setSectionTitle_1] = useState<string>("");
-  const [sectionTitle_2, setSectionTitle_2] = useState<string>("");
-  const [sectionTitle_3, setSectionTitle_3] = useState<string>("");
+  const generateId = () => Math.floor(Date.now() / 1000);
 
+  const [course, setCourse] = useState<Course>({
+    id: generateId(),
+    name: '',
+    creator: '', // Pubkey biasanya diterima sebagai string dari backend
+    description: '',
+    price: 0,
+    buyer: 0,
+    thumbnail: '',
+    section_title: ['', '', ''],
+    section_description: ['', '', ''],
+    section_duration: [0, 0, 0],
+    section_video: ['', '', ''],
+    question_list: ['', '', ''],
+    answer_list: ['', '', ''],
+    first_answer_options: ['', '', '', ''],
+    second_answer_options: ['', '', '', ''],
+    third_answer_options: ['', '', '', ''],
+  });
+
+  const updateCourse = (updatedCourse: Partial<Course>) => {
+    setCourse((prevCourse) => ({
+      ...prevCourse,
+      ...updatedCourse,
+    }));
+  };
+
+  const handleFileUpload = (fileName: string) => {
+    updateCourse({
+      thumbnail: fileName
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted");
-  };
-
-  
-  const handleFileUpload = (thumbnail: File | null) => {
-    setThumbnail(thumbnail);
-    console.log(thumbnail);
   };
 
   const [openSectionAccordion, setOpenSectionAccordion] = useState<number | null>(null);
@@ -41,9 +80,26 @@ export function CourseForm() {
     setOpenQuestionAccordion(openQuestionAccordion === index ? null : index);
   };
 
+  const successAlert = () => {
+    Swal.fire({
+      text: "You've successfully created a new course!",
+      icon: 'success',
+      confirmButtonText: 'Done',
+      confirmButtonColor: '#1f6feb'
+    });
+  };
+
+  useEffect(() => {
+    console.log("Updated course:", course);
+  }, [course]);
+
   return (
-    <form className="w-full h-full mx-auto p-4 md:p-6 shadow-input bg-gray-100 flex flex-row space-x-4" onSubmit={handleSubmit}>
-      <div className="bg-white w-1/2 p-8 rounded-md shadow-input">
+    <form className="w-full h-full mx-auto p-4 md:p-6 shadow-input bg-gray-100 flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0" onSubmit={handleSubmit}>
+      <div
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-duration="500"
+        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input">
         <h2 className="font-bold text-xl text-neutral-800">
           Create Your Course
         </h2>
@@ -52,315 +108,244 @@ export function CourseForm() {
         </p>
         <div className="w-full flex flex-col space-y-4">
           <LabelInputContainer>
-            <Label htmlFor="course_name">Course Name</Label>
-            <Input id="course_name" placeholder="Ex: Advanced Blockchain Programming with Solidity" type="text" />
+            <Label
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              htmlFor="course_name">Course Name</Label>
+            <Input
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              id="course_name"
+              placeholder="Ex: Advanced Blockchain Programming with Solidity"
+              type="text"
+              value={course.name}
+              onChange={(e) =>
+                updateCourse({
+                  name: e.target.value
+                })
+              }
+            />
           </LabelInputContainer>
           <LabelInputContainer>
-            <Label htmlFor="description">Description</Label>
-            <TextArea rows={5} cols={30} id="description" placeholder="Ex: Dive into blockchain development and learn how to create secure and scalable applications" />
+            <Label
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              htmlFor="description">Description</Label>
+            <TextArea
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              rows={5}
+              cols={30}
+              id="description"
+              placeholder="Ex: Dive into blockchain development and learn how to create secure and scalable applications"
+              value={course.description}
+              onChange={(e) =>
+                updateCourse({
+                  description: e.target.value
+                })
+              }
+            />
           </LabelInputContainer>
           <LabelInputContainer>
-            <Label htmlFor="price">Price</Label>
-            <Input id="price" placeholder="Ex: 20 SOL" type="number" />
+            <Label
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              htmlFor="price">Price</Label>
+            <Input
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              min="1"
+              step="1"
+              id="price"
+              placeholder="Ex: 20 SOL"
+              type="number"
+              value={course.price}
+              onChange={(e) =>
+                updateCourse({
+                  price: parseInt(e.target.value)
+                })
+              }
+            />
           </LabelInputContainer>
           <LabelInputContainer>
-            <Label htmlFor="duration">Duration</Label>
-            <Input id="duration" placeholder="2 hours" type="number" />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="thumbnail">Thumbnail</Label>
-            <FileUpload onChange={handleFileUpload} fileType={"Thumbnail"} />
+            <Label
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              htmlFor="thumbnail">Thumbnail</Label>
+            <FileUpload
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              updateCourse={handleFileUpload} fileType={"Thumbnail"} />
           </LabelInputContainer>
           <button
+            data-aos="fade-up"
+            data-aos-anchor-placement="top-bottom"
+            data-aos-duration="500"
             className="bg-gradient-to-br relative group/btn from-black to-neutral-600 block w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]"
             type="submit"
+            onClick={() => successAlert()}
           >
             Create
             <BottomGradient />
           </button>
         </div>
       </div>
-      <div className="bg-white w-1/2 p-8 rounded-md shadow-input flex flex-col space-y-12">
-        <div id="section-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
-          <h2 className="font-bold text-xl text-neutral-800">
+      <div
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-duration="500"
+        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input flex flex-col space-y-12">
+        <div
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-duration="500"
+          id="section-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
+          <h2
+            data-aos="fade-up"
+            data-aos-anchor-placement="top-bottom"
+            data-aos-duration="500"
+            className="font-bold text-xl text-neutral-800">
             Course Sections Overview
           </h2>
-          <p className="text-neutral-600 text-base w-full mt-2 mb-4">
-            In this section, outline the topics included in your course. This will help students understand the course structure and what to expect.        
+          <p
+            data-aos="fade-up"
+            data-aos-anchor-placement="top-bottom"
+            data-aos-duration="500"
+            className="text-neutral-600 text-base w-full mt-2 mb-4">
+            In this section, outline the topics included in your course. This will help students understand the course structure and what to expect.
           </p>
-          <h2 id="section-accordion-flush-heading-1">
-            <button
-              type="button"
-              onClick={() => toggleSectionAccordion(1)}
-              className={openSectionAccordion === 1 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openSectionAccordion === 1}
-              aria-controls="section-accordion-flush-body-1"
-            >
-              <span>1st Section</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openSectionAccordion === 1 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="section-accordion-flush-body-1"
-            className={openSectionAccordion === 1 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="section-accordion-flush-heading-1"
-          >
-            <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="section1_title">Title</Label>
-                <Input id="section1_title" placeholder="What Will You Teach?" type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section1_description">Description</Label>
-                <TextArea rows={5} cols={30} id="section1_description" placeholder="Provide a brief description of this section, highlighting key concepts and objectives that will be covered." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section1_video">Video</Label>
-                <FileUpload onChange={handleFileUpload} fileType={"Video"} />
-              </LabelInputContainer>
-            </div>
-          </div>
-          <h2 id="section-accordion-flush-heading-2">
-            <button
-              type="button"
-              onClick={() => toggleSectionAccordion(2)}
-              className={openSectionAccordion === 2 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openSectionAccordion === 2}
-              aria-controls="section-accordion-flush-body-2"
-            >
-              <span>2nd Section</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openSectionAccordion === 2 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="section-accordion-flush-body-2"
-            className={openSectionAccordion === 2 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="section-accordion-flush-heading-2"
-          >
-            <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="section2_title">Title</Label>
-                <Input id="section2_title" placeholder="What Will You Teach?" type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section2_description">Description</Label>
-                <TextArea rows={5} cols={30} id="section2_description" placeholder="Provide a brief description of this section, highlighting key concepts and objectives that will be covered." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section2_video">Video</Label>
-                <FileUpload onChange={handleFileUpload} fileType={"Video"} />
-              </LabelInputContainer>
-            </div>
-          </div>
-          <h2 id="section-accordion-flush-heading-3">
-            <button
-              type="button"
-              onClick={() => toggleSectionAccordion(3)}
-              className={openSectionAccordion === 3 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openSectionAccordion === 3}
-              aria-controls="section-accordion-flush-body-3"
-            >
-              <span>3rd Section</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openSectionAccordion === 3 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="section-accordion-flush-body-3"
-            className={openSectionAccordion === 3 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="section-accordion-flush-heading-3"
-          >
-            <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="section3_title">Title</Label>
-                <Input id="section3_title" placeholder="What Will You Teach?" type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section3_description">Description</Label>
-                <TextArea rows={5} cols={30} id="section3_description" placeholder="Provide a brief description of this section, highlighting key concepts and objectives that will be covered." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="section3_video">Video</Label>
-                <FileUpload onChange={handleFileUpload} fileType={"Video"} />
-              </LabelInputContainer>
-            </div>
-          </div>
+          <SectionAccordion
+            toggleSectionAccordion={() => toggleSectionAccordion(1)}
+            openSectionAccordion={openSectionAccordion}
+            sectionTitle={"1st Section"}
+            numberSection={1}
+            htmlForTitle={"section1_title"}
+            htmlIdTitle={"section1_title"}
+            placeholderTitle={"What Will You Teach?"}
+            htmlForDescription={"section1_description"}
+            htmlIdDescription={"section1_description"}
+            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            course={course}
+            updateCourse={updateCourse}
+          />
+          <SectionAccordion
+            toggleSectionAccordion={() => toggleSectionAccordion(2)}
+            openSectionAccordion={openSectionAccordion}
+            sectionTitle={"2nd Section"}
+            numberSection={2}
+            htmlForTitle={"section2_title"}
+            htmlIdTitle={"section2_title"}
+            placeholderTitle={"What Will You Teach?"}
+            htmlForDescription={"section2_description"}
+            htmlIdDescription={"section2_description"}
+            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            course={course}
+            updateCourse={updateCourse}
+          />
+          <SectionAccordion
+            toggleSectionAccordion={() => toggleSectionAccordion(3)}
+            openSectionAccordion={openSectionAccordion}
+            sectionTitle={"3rd Section"}
+            numberSection={3}
+            htmlForTitle={"section3_title"}
+            htmlIdTitle={"section3_title"}
+            placeholderTitle={"What Will You Teach?"}
+            htmlForDescription={"section3_description"}
+            htmlIdDescription={"section3_description"}
+            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            course={course}
+            updateCourse={updateCourse}
+          />
         </div>
-        <div id="question-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
-        <h2 className="font-bold text-xl text-neutral-800">
+        <div
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-duration="500"
+          id="question-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
+          <h2
+            data-aos="fade-up"
+            data-aos-anchor-placement="top-bottom"
+            data-aos-duration="500"
+            className="font-bold text-xl text-neutral-800">
             Quiz Questions Section
           </h2>
-          <p className="text-neutral-600 text-base w-full mt-2 mb-4">
-          In this section, you can add quiz questions to assess your students' understanding. This will enhance the learning experience and help track progress.
+          <p
+            data-aos="fade-up"
+            data-aos-anchor-placement="top-bottom"
+            data-aos-duration="500"
+            className="text-neutral-600 text-base w-full mt-2 mb-4">
+            In this section, you can add quiz questions to assess your students' understanding. This will enhance the learning experience and help track progress.
           </p>
-          <h2 id="question-accordion-flush-heading-1">
-            <button
-              type="button"
-              onClick={() => toggleQuestionAccordion(1)}
-              className={openQuestionAccordion === 1 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openQuestionAccordion === 1}
-              aria-controls="question-accordion-flush-body-1"
-            >
-              <span>1st Question</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openQuestionAccordion === 1 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="question-accordion-flush-body-1"
-            className={openQuestionAccordion === 1 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="question-accordion-flush-heading-1"
-          >
-            <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="question1_title">Question</Label>
-                <Input id="question1_title" placeholder="Enter the quiz question here..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_answer">Answer</Label>
-                <TextArea rows={5} cols={30} id="question1_answer" placeholder="Enter the correct answer..." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options1">1st Answer Option</Label>
-                <Input id="question1_options1" placeholder="Enter first answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options2">2nd Answer Option</Label>
-                <Input id="question1_options2" placeholder="Enter second answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options3">3rd Answer Option</Label>
-                <Input id="question1_options3" placeholder="Enter third answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options4">4th Answer Option</Label>
-                <Input id="question1_options4" placeholder="Enter fourth answer option..." type="text" />
-              </LabelInputContainer>
-            </div>
-          </div>
-          <h2 id="question-accordion-flush-heading-2">
-            <button
-              type="button"
-              onClick={() => toggleQuestionAccordion(2)}
-              className={openQuestionAccordion === 2 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openQuestionAccordion === 2}
-              aria-controls="question-accordion-flush-body-2"
-            >
-              <span>2nd Question</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openQuestionAccordion === 2 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="question-accordion-flush-body-2"
-            className={openQuestionAccordion === 2 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="question-accordion-flush-heading-2"
-          >
-             <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="question1_title">Question</Label>
-                <Input id="question1_title" placeholder="Enter the quiz question here..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_answer">Answer</Label>
-                <TextArea rows={5} cols={30} id="question1_answer" placeholder="Enter the correct answer..." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options1">1st Answer Option</Label>
-                <Input id="question1_options1" placeholder="Enter first answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options2">2nd Answer Option</Label>
-                <Input id="question1_options2" placeholder="Enter second answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options3">3rd Answer Option</Label>
-                <Input id="question1_options3" placeholder="Enter third answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options4">4th Answer Option</Label>
-                <Input id="question1_options4" placeholder="Enter fourth answer option..." type="text" />
-              </LabelInputContainer>
-            </div>
-          </div>
-          <h2 id="question-accordion-flush-heading-3">
-            <button
-              type="button"
-              onClick={() => toggleQuestionAccordion(3)}
-              className={openQuestionAccordion === 3 ? "flex items-center justify-between w-full py-5 font-bold rtl:text-right text-gray-900 border-b border-gray-200 gap-3" : "flex items-center justify-between w-full py-5 font-medium rtl:text-right text-gray-500 border-b border-gray-200 gap-3"}
-              aria-expanded={openQuestionAccordion === 3}
-              aria-controls="question-accordion-flush-body-3"
-            >
-              <span>3rd Question</span>
-              <svg data-accordion-icon className={`w-3 h-3 ${openQuestionAccordion === 3 ? 'rotate-180' : ''} shrink-0`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div
-            id="question-accordion-flush-body-3"
-            className={openQuestionAccordion === 3 ? 'py-5 border-b border-gray-200' : 'hidden'}
-            aria-labelledby="question-accordion-flush-heading-3"
-          >
-             <div className="w-full flex flex-col space-y-4">
-              <LabelInputContainer>
-                <Label htmlFor="question1_title">Question</Label>
-                <Input id="question1_title" placeholder="Enter the quiz question here..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_answer">Answer</Label>
-                <TextArea rows={5} cols={30} id="question1_answer" placeholder="Enter the correct answer..." />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options1">1st Answer Option</Label>
-                <Input id="question1_options1" placeholder="Enter first answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options2">2nd Answer Option</Label>
-                <Input id="question1_options2" placeholder="Enter second answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options3">3rd Answer Option</Label>
-                <Input id="question1_options3" placeholder="Enter third answer option..." type="text" />
-              </LabelInputContainer>
-              <LabelInputContainer>
-                <Label htmlFor="question1_options4">4th Answer Option</Label>
-                <Input id="question1_options4" placeholder="Enter fourth answer option..." type="text" />
-              </LabelInputContainer>
-            </div>
-          </div>
+          <QuestionAccordion
+            toggleQuestionAccordion={() => toggleQuestionAccordion(1)}
+            openQuestionAccordion={openQuestionAccordion}
+            questionTitle={"1st Question"}
+            numberQuestion={1}
+            htmlForQuestion={"question1_question"}
+            htmlIdQuestion={"question1_question"}
+            placeholderQuestion={"Enter the quiz question here..."}
+            htmlForCorrectAnswer={"question1_correctAnswer"}
+            htmlIdCorrectAnswer={"question1_correctAnswer"}
+            placeholderCorrectAnswer={"Enter the correct answer..."}
+            htmlForAnswerOptions1={"question1_options1"}
+            htmlIdAnswerOptions1={"question1_options1"}
+            placeholderAnswerOptions1={"Enter first answer option..."}
+            placeholderAnswerOptions2={"Enter second answer option..."}
+            placeholderAnswerOptions3={"Enter third answer option..."}
+            placeholderAnswerOptions4={"Enter fourth answer option..."}
+            course={course}
+            updateCourse={updateCourse}
+          />
+          <QuestionAccordion
+            toggleQuestionAccordion={() => toggleQuestionAccordion(2)}
+            openQuestionAccordion={openQuestionAccordion}
+            questionTitle={"2nd Question"}
+            numberQuestion={2}
+            htmlForQuestion={"question2_question"}
+            htmlIdQuestion={"question2_question"}
+            placeholderQuestion={"Enter the quiz question here..."}
+            htmlForCorrectAnswer={"question2_correctAnswer"}
+            htmlIdCorrectAnswer={"question2_correctAnswer"}
+            placeholderCorrectAnswer={"Enter the correct answer..."}
+            htmlForAnswerOptions1={"question2_options1"}
+            htmlIdAnswerOptions1={"question2_options1"}
+            placeholderAnswerOptions1={"Enter first answer option..."}
+            placeholderAnswerOptions2={"Enter second answer option..."}
+            placeholderAnswerOptions3={"Enter third answer option..."}
+            placeholderAnswerOptions4={"Enter fourth answer option..."}
+            course={course}
+            updateCourse={updateCourse}
+          />
+          <QuestionAccordion
+            toggleQuestionAccordion={() => toggleQuestionAccordion(3)}
+            openQuestionAccordion={openQuestionAccordion}
+            questionTitle={"3rd Question"}
+            numberQuestion={3}
+            htmlForQuestion={"question3_question"}
+            htmlIdQuestion={"question3_question"}
+            placeholderQuestion={"Enter the quiz question here..."}
+            htmlForCorrectAnswer={"question3_correctAnswer"}
+            htmlIdCorrectAnswer={"question3_correctAnswer"}
+            placeholderCorrectAnswer={"Enter the correct answer..."}
+            htmlForAnswerOptions1={"question3_options1"}
+            htmlIdAnswerOptions1={"question3_options1"}
+            placeholderAnswerOptions1={"Enter first answer option..."}
+            placeholderAnswerOptions2={"Enter second answer option..."}
+            placeholderAnswerOptions3={"Enter third answer option..."}
+            placeholderAnswerOptions4={"Enter fourth answer option..."}
+            course={course}
+            updateCourse={updateCourse}
+          />
         </div>
       </div>
     </form>
   );
 }
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
