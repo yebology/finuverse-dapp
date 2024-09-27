@@ -6,17 +6,14 @@ import { FileUpload } from './file-upload';
 import LabelInputContainer from './label-input-container';
 
 interface Course {
-    id: number;
     name: string;
-    creator: string;
     description: string;
     price: number;
-    buyer: number;
-    thumbnail: string;
+    thumbnail: File | null;
     section_title: [string, string, string];
     section_description: [string, string, string];
     section_duration: [number, number, number];
-    section_video: [string, string, string];
+    section_video: [File | null, File | null, File | null];
     question_list: [string, string, string];
     answer_list: [string, string, string];
     first_answer_options: [string, string, string, string];
@@ -35,6 +32,9 @@ type SectionAccordionProps = {
     htmlForDescription: string;
     htmlIdDescription: string;
     placeholderDescription: string;
+    htmlForDuration: string,
+    htmlIdDuration: string,
+    placeholderDuration: string,
     course: Course;
     updateCourse: (updatedFields: Partial<Course>) => void;
 };
@@ -50,16 +50,19 @@ const SectionAccordion: React.FC<SectionAccordionProps> = ({
     htmlForDescription,
     htmlIdDescription,
     placeholderDescription,
+    htmlForDuration,
+    htmlIdDuration,
+    placeholderDuration,
     course,
     updateCourse,
 }) => {
     const sectionIndex = numberSection - 1;
 
-    const handleFileUpload = (fileName: string) => {
+    const handleFileUpload = (file: File) => {
         updateCourse({
             section_video: course.section_video.map((video, index) =>
-                index === sectionIndex ? fileName : video
-            ) as [string, string, string],
+                index === sectionIndex ? file : video
+            ) as [File | null, File | null, File | null],
         });
     };
 
@@ -101,7 +104,7 @@ const SectionAccordion: React.FC<SectionAccordionProps> = ({
                 className={openSectionAccordion === numberSection ? 'py-5 border-b border-gray-200' : 'hidden'}
                 aria-labelledby={`section-accordion-heading-${numberSection}`}
             >
-                <div className="w-full flex flex-col space-y-4">
+                <div className="w-full flex flex-col space-y-6">
                     <LabelInputContainer>
                         <Label htmlFor={htmlForTitle}>Title</Label>
                         <Input
@@ -131,6 +134,24 @@ const SectionAccordion: React.FC<SectionAccordionProps> = ({
                                     section_description: course.section_description.map((desc, index) =>
                                         index === sectionIndex ? e.target.value : desc
                                     ) as [string, string, string],
+                                })
+                            }
+                        />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                        <Label htmlFor={htmlForDuration}>Duration</Label>
+                        <Input
+                            type="number"
+                            step="1"
+                            min="1"
+                            id={htmlIdDuration}
+                            placeholder={placeholderDuration}
+                            value={course.section_duration[sectionIndex]}
+                            onChange={(e) =>
+                                updateCourse({
+                                    section_duration: course.section_duration.map((duration, index) =>
+                                        index === sectionIndex ? e.target.value : duration
+                                    ) as [number, number, number],
                                 })
                             }
                         />

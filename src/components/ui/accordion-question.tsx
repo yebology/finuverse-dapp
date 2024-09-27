@@ -1,21 +1,17 @@
 import React from 'react';
 import { Label } from './label';
 import { Input } from './input';
-import { TextArea } from './textarea';
 import LabelInputContainer from './label-input-container';
 
 interface Course {
-    id: number;
     name: string;
-    creator: string;
     description: string;
     price: number;
-    buyer: number;
-    thumbnail: string;
+    thumbnail: File | null;
     section_title: [string, string, string];
     section_description: [string, string, string];
     section_duration: [number, number, number];
-    section_video: [string, string, string];
+    section_video: [File | null, File | null, File | null];
     question_list: [string, string, string];
     answer_list: [string, string, string];
     first_answer_options: [string, string, string, string];
@@ -102,7 +98,7 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                 className={openQuestionAccordion === numberQuestion ? 'py-5 border-b border-gray-200' : 'hidden'}
                 aria-labelledby={`question-accordion-heading-${numberQuestion}`}
             >
-                <div className="w-full flex flex-col space-y-4">
+                <div className="w-full flex flex-col space-y-6">
                     <LabelInputContainer>
                         <Label htmlFor={htmlForQuestion}>Question</Label>
                         <Input
@@ -114,23 +110,6 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                                 updateCourse({
                                     question_list: course.question_list.map((question, index) =>
                                         index === questionIndex ? e.target.value : question
-                                    ) as [string, string, string],
-                                })
-                            }
-                        />
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                        <Label htmlFor={htmlForCorrectAnswer}>Correct Answer</Label>
-                        <TextArea
-                            rows={5}
-                            cols={30}
-                            id={htmlIdCorrectAnswer}
-                            placeholder={placeholderCorrectAnswer}
-                            value={course.answer_list[questionIndex]}
-                            onChange={(e) =>
-                                updateCourse({
-                                    answer_list: course.answer_list.map((correctAnswer, index) =>
-                                        index === questionIndex ? e.target.value : correctAnswer
                                     ) as [string, string, string],
                                 })
                             }
@@ -152,6 +131,22 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                             />
                         </LabelInputContainer>
                     ))}
+                    <LabelInputContainer>
+                        <Label htmlFor={htmlForCorrectAnswer}>Correct Answer</Label>
+                        <Input
+                            id={htmlIdCorrectAnswer}
+                            placeholder={placeholderCorrectAnswer}
+                            type="text"
+                            value={course.answer_list[questionIndex]}
+                            onChange={(e) =>
+                                updateCourse({
+                                    answer_list: course.answer_list.map((correctAnswer, index) =>
+                                        index === questionIndex ? e.target.value : correctAnswer
+                                    ) as [string, string, string],
+                                })
+                            }
+                        />
+                    </LabelInputContainer>
                 </div>
             </div>
         </>

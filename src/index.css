@@ -3,3 +3,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.wallet-adapter-button-trigger {
+    background-color: #172554;
+    border-radius: 16px;
+}

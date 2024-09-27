@@ -21,7 +21,7 @@ const mainVariant = {
 };
 
 interface FileUploadProps {
-    updateCourse: (fileName: string) => void;
+    updateCourse: (file: File) => void;
     fileType: string;
 }
 
@@ -32,13 +32,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({ updateCourse, fileType }
     const handleFileChange = (newFiles: File[]) => {
         if (newFiles.length > 0) {
             const selectedFile = newFiles[0];
-            const allowedTypes = ['image/jpeg', 'image/png', 'video/mp4'];
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4'];
             if (!allowedTypes.includes(selectedFile.type)) {
                 return;
             }
             setFile(selectedFile);
             console.log(selectedFile.name);
-            updateCourse(selectedFile.name);
+            updateCourse(selectedFile);
         }
     };
 

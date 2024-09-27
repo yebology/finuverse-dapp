@@ -1,29 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { TextArea } from "../components/ui/textarea";
 import { BottomGradient } from "../components/ui/bottom-gradient";
 import { FileUpload } from "../components/ui/file-upload";
+import LoadingScreen from "../components/ui/loading-screen";
 import SectionAccordion from "../components/ui/accordion-section";
 import QuestionAccordion from "../components/ui/accordion-question";
 import LabelInputContainer from "../components/ui/label-input-container";
 import Swal from 'sweetalert2'
+import { PinataSDK } from "pinata-web3";
+import { createCourse } from "../services/course";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { getCourse } from "../services/course";
 
 export function CourseForm() {
 
   interface Course {
-    id: number;
     name: string;
-    creator: string;
     description: string;
     price: number;
-    buyer: number;
-    thumbnail: string;
+    thumbnail: File | null;
     section_title: [string, string, string];
     section_description: [string, string, string];
     section_duration: [number, number, number];
-    section_video: [string, string, string];
+    section_video: [File | null, File | null, File | null];
     question_list: [string, string, string];
     answer_list: [string, string, string];
     first_answer_options: [string, string, string, string];
@@ -31,26 +34,33 @@ export function CourseForm() {
     third_answer_options: [string, string, string, string];
   }
 
-  const generateId = () => Math.floor(Date.now() / 1000);
-
   const [course, setCourse] = useState<Course>({
-    id: generateId(),
-    name: '',
-    creator: '', // Pubkey biasanya diterima sebagai string dari backend
-    description: '',
-    price: 0,
-    buyer: 0,
-    thumbnail: '',
-    section_title: ['', '', ''],
-    section_description: ['', '', ''],
-    section_duration: [0, 0, 0],
-    section_video: ['', '', ''],
-    question_list: ['', '', ''],
-    answer_list: ['', '', ''],
-    first_answer_options: ['', '', '', ''],
-    second_answer_options: ['', '', '', ''],
-    third_answer_options: ['', '', '', ''],
+    name: 'Introduction to Web Development',
+    description: 'A comprehensive course designed to teach you the basics.',
+    price: 5,
+    thumbnail: null,
+    section_title: ['Getting Started', 'HTML & CSS Basics', 'JavaScript Fundamentals'],
+    section_description: [
+      'Introduction to the tools and setup required.',
+      'Learn the foundational structure and styling.',
+      'Understand JavaScript fundamentals.'
+    ],
+    section_duration: [30, 45, 60],
+    section_video: [null, null, null],
+    question_list: ['What is HTML?', 'How do you style a webpage?', 'What is a function in JavaScript?'],
+    answer_list: ['HTML is a markup language.', 'You style a webpage using CSS.', 'A function is a block of code designed.'],
+    first_answer_options: ['HTML', 'CSS', 'JavaScript', 'Python'],
+    second_answer_options: ['CSS', 'Bootstrap', 'JavaScript', 'PHP'],
+    third_answer_options: ['Function', 'Variable', 'Array', 'Object'],
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Updated course:", course);
+  }, [course]);
 
   const updateCourse = (updatedCourse: Partial<Course>) => {
     setCourse((prevCourse) => ({
@@ -59,15 +69,169 @@ export function CourseForm() {
     }));
   };
 
-  const handleFileUpload = (fileName: string) => {
+  const pinata = new PinataSDK({
+    pinataJwt: `${import.meta.env.VITE_JWT}`,
+    pinataGateway: `${import.meta.env.VITE_DOMAIN_PINATA}`,
+  });
+
+  const handleUploadThumbnailToPinata = async () => {
+    try {
+      if (course.thumbnail) {
+        const upload = await pinata.upload.file(course.thumbnail);
+        return upload.IpfsHash;
+      } else {
+        console.log("Thumbnail not provided");
+        return ""
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
+  const handleUploadVideo1ToPinata = async () => {
+    try {
+      if (course.section_video[0]) {
+        const upload = await pinata.upload.file(course.section_video[0]);
+        return upload.IpfsHash;
+      } else {
+        console.log("Video 1 not provided");
+        return "";
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
+  const handleUploadVideo2ToPinata = async () => {
+    try {
+      if (course.section_video[1]) {
+        const upload = await pinata.upload.file(course.section_video[1]);
+        return upload.IpfsHash;
+      } else {
+        console.log("Video 2 not provided");
+        return "";
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
+  const handleUploadVideo3ToPinata = async () => {
+    try {
+      if (course.section_video[2]) {
+        const upload = await pinata.upload.file(course.section_video[2]);
+        return upload.IpfsHash;
+      } else {
+        console.log("Video 3 not provided");
+        return "";
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
+  const handleFileUpload = (file: File) => {
     updateCourse({
-      thumbnail: fileName
+      thumbnail: file,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+  const successAlert = () => {
+    Swal.fire({
+      text: "You've successfully created a new course!",
+      icon: 'success',
+      confirmButtonText: 'Done',
+      confirmButtonColor: '#1f6feb',
+      customClass: {
+        confirmButton: 'w-full'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/course');
+      }
+    });
+  };
+
+  const failedAlert = () => {
+    Swal.fire({
+      text: "Oops... There's something wrong while creating the course. Please try again!",
+      icon: 'error',
+      confirmButtonText: 'Done',
+      confirmButtonColor: '#cc0029'
+    });
+  };
+
+  const reset = () => {
+    setCourse({
+      name: '',
+      description: '',
+      price: 0,
+      thumbnail: null,
+      section_title: ['', '', ''],
+      section_description: ['', '', ''],
+      section_duration: [0, 0, 0],
+      section_video: [null, null, null],
+      question_list: ['', '', ''],
+      answer_list: ['', '', ''],
+      first_answer_options: ['', '', '', ''],
+      second_answer_options: ['', '', '', ''],
+      third_answer_options: ['', '', '', ''],
+    });
+  };
+
+  const wallet = useAnchorWallet();
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+
+    Promise.all([
+      handleUploadThumbnailToPinata(),
+      handleUploadVideo1ToPinata(),
+      handleUploadVideo2ToPinata(),
+      handleUploadVideo3ToPinata(),
+    ])
+      .then(([thumbnail_cid, video_1, video_2, video_3]) => {
+
+        if (thumbnail_cid && video_1 && video_2 && video_3) {
+          const sectionVideoCID: string[] = [video_1, video_2, video_3];
+
+          return createCourse(
+            wallet,
+            course.name,
+            course.description,
+            course.price,
+            thumbnail_cid,
+            course.section_title,
+            course.section_description,
+            course.section_duration,
+            sectionVideoCID,
+            course.question_list,
+            course.answer_list,
+            course.first_answer_options,
+            course.second_answer_options,
+            course.third_answer_options
+          );
+        } else {
+          console.log("One or more files failed to upload.");
+        }
+      })
+      .then(() => {
+        setIsLoading(false);
+        successAlert();
+        reset();
+        getCourse(wallet);
+        console.log("Form submitted");
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        failedAlert();
+        reset();
+        console.error("Error during submission:", error);
+      });
   };
 
   const [openSectionAccordion, setOpenSectionAccordion] = useState<number | null>(null);
@@ -80,21 +244,12 @@ export function CourseForm() {
     setOpenQuestionAccordion(openQuestionAccordion === index ? null : index);
   };
 
-  const successAlert = () => {
-    Swal.fire({
-      text: "You've successfully created a new course!",
-      icon: 'success',
-      confirmButtonText: 'Done',
-      confirmButtonColor: '#1f6feb'
-    });
-  };
-
-  useEffect(() => {
-    console.log("Updated course:", course);
-  }, [course]);
+  if (isLoading) {
+    return <LoadingScreen />
+  }
 
   return (
-    <form className="w-full h-full mx-auto p-4 md:p-6 shadow-input bg-gray-100 flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0" onSubmit={handleSubmit}>
+    <div className="w-full h-full mx-auto p-4 md:p-6 shadow-input bg-gray-100 flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
       <div
         data-aos="fade-up"
         data-aos-anchor-placement="top-bottom"
@@ -186,12 +341,12 @@ export function CourseForm() {
               updateCourse={handleFileUpload} fileType={"Thumbnail"} />
           </LabelInputContainer>
           <button
+            onClick={() => handleSubmit()}
             data-aos="fade-up"
             data-aos-anchor-placement="top-bottom"
             data-aos-duration="500"
-            className="bg-gradient-to-br relative group/btn from-black to-neutral-600 block w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]"
+            className="bg-gradient-to-br relative group/btn from-blue-600 to-blue-400 block w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset]"
             type="submit"
-            onClick={() => successAlert()}
           >
             Create
             <BottomGradient />
@@ -233,6 +388,9 @@ export function CourseForm() {
             htmlForDescription={"section1_description"}
             htmlIdDescription={"section1_description"}
             placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            htmlForDuration={"section1_duration"}
+            htmlIdDuration={"section1_duration"}
+            placeholderDuration={"How long is the duration of this course? (in minutes)"}
             course={course}
             updateCourse={updateCourse}
           />
@@ -247,6 +405,9 @@ export function CourseForm() {
             htmlForDescription={"section2_description"}
             htmlIdDescription={"section2_description"}
             placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            htmlForDuration={"section2_duration"}
+            htmlIdDuration={"section2_duration"}
+            placeholderDuration={"How long is the duration of this course? (in minutes)"}
             course={course}
             updateCourse={updateCourse}
           />
@@ -261,6 +422,9 @@ export function CourseForm() {
             htmlForDescription={"section3_description"}
             htmlIdDescription={"section3_description"}
             placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            htmlForDuration={"section3_duration"}
+            htmlIdDuration={"section3_duration"}
+            placeholderDuration={"How long is the duration of this course? (in minutes)"}
             course={course}
             updateCourse={updateCourse}
           />
@@ -346,6 +510,6 @@ export function CourseForm() {
           />
         </div>
       </div>
-    </form>
+    </div>
   );
 }
