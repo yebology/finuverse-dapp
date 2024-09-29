@@ -62,7 +62,7 @@ function Profile() {
   }, [user]);
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center h-screen">
+    <div className="bg-gray-100 flex items-center justify-center h-full">
       <div className="bg-white rounded-lg shadow-lg p-8 w-11/12 sm:w-3/5 flex flex-col">
         <div className="flex flex-col md:flex-row md:items-start mb-8">
           <div className="profile-section border-b border-gray-300 pb-4 flex justify-center mb-4 md:mb-0 md:border-b-0 md:border-r border-gray-300 md:pr-4">
