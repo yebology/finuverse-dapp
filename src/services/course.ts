@@ -116,7 +116,38 @@ function structuredCourse(allCourse: any) {
 export async function buyCourse(
   wallet: AnchorWallet | undefined,
   courseId: number
-) {}
+) {
+  const provider = getProvider(wallet!);
+  if (!provider) {
+    console.log("Provider isn't available!");
+    return;
+  }
+  const idConverted = new BN(courseId);
+
+  const program = new Program(programInterface, programId, provider);
+  const systemProgramId = SystemProgram.programId;
+
+  const id = idConverted.toArrayLike(Buffer, "le", 8);
+  const [buyPda] = web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("buy"), provider.wallet.publicKey.toBuffer(), id],
+    program.programId
+  );
+  const [coursePda] = web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("course"), " " ,id],
+    program.programId
+  );
+
+  await program.methods
+    .buyCourse(idConverted)
+    .accounts({
+      buy: buyPda,
+      course: coursePda,
+      buyer: provider.wallet.publicKey,
+      to: "",
+      systemProgram: systemProgramId,
+    })
+    .rpc();
+}
 
 export async function rateCourse(
   wallet: AnchorWallet | undefined,
@@ -139,7 +170,6 @@ export async function rateCourse(
     [Buffer.from("rate"), provider.wallet.publicKey.toBuffer(), id],
     program.programId
   );
-  console.log(ratePda);
 
   await program.methods
     .rateCourse(idConverted, ratingConverted)
@@ -168,26 +198,32 @@ async function loadCourseRating(courseId: number) {
     console.log(allRating);
     const convertedAllRating = structuredRating(allRating, courseId);
     console.log(convertedAllRating);
-  } 
-  catch (error) {
+  } catch (error) {
     console.log(error);
     return [];
   }
 }
 
-function structuredRating(data: any, courseId : number) {
+function structuredRating(data: any, courseId: number) {
   const ratingList = data.map((rate: any) => ({
     courseId: rate.account.courseId.toNumber(),
     rating: rate.account.rating.toNumber(),
   }));
-  const filteredRating = ratingList.filter((data : any) => data.courseId === courseId)
-  const accumulateRating = filteredRating.reduce((acc : any, current : any) => acc + current.rating, 0);
+  const filteredRating = ratingList.filter(
+    (data: any) => data.courseId === courseId
+  );
+  const accumulateRating = filteredRating.reduce(
+    (acc: any, current: any) => acc + current.rating,
+    0
+  );
   const currentRatingTotal = filteredRating.length;
-  return (accumulateRating / currentRatingTotal);
+  return accumulateRating / currentRatingTotal;
 }
 
 export async function completeCourse(
   wallet: AnchorWallet | undefined,
   courseId: number,
   correctAnswer: number
-) {}
+) {
+  
+}
