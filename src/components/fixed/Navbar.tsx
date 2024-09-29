@@ -1,3 +1,4 @@
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { navList } from "../../utils/list";
 
 export const Navbar = () => {
@@ -27,14 +28,7 @@ export const Navbar = () => {
             ))}
           </div>
         </nav>
-
-        <button
-        style={{backgroundColor: '#f8f9fa'}}
-        className="items-center flex justify-center rounded-lg text-black px-4 py-3">
-            (Dummy button)
-        </button>
-
-        {/* <WalletMultiButton /> */}
+        <WalletMultiButton/>
       </div>
     </div>
   );
