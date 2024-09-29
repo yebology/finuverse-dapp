@@ -6,6 +6,7 @@ import { Input } from "../components/ui/input";
 import { TextArea } from "../components/ui/textarea";
 import { BottomGradient } from "../components/ui/bottom-gradient";
 import { FileUpload } from "../components/ui/file-upload";
+import SelectMenus from "../components/ui/select-menus";
 import LoadingScreen from "../components/ui/loading-screen";
 import SectionAccordion from "../components/ui/accordion-section";
 import QuestionAccordion from "../components/ui/accordion-question";
@@ -21,6 +22,7 @@ export function CourseForm() {
   interface Course {
     name: string;
     description: string;
+    category: number,
     price: number;
     thumbnail: File | null;
     section_title: [string, string, string];
@@ -37,6 +39,7 @@ export function CourseForm() {
   const [course, setCourse] = useState<Course>({
     name: 'Introduction to Web Development',
     description: 'A comprehensive course designed to teach you the basics.',
+    category: 1,
     price: 5,
     thumbnail: null,
     section_title: ['Getting Started', 'HTML & CSS Basics', 'JavaScript Fundamentals'],
@@ -169,6 +172,7 @@ export function CourseForm() {
     setCourse({
       name: '',
       description: '',
+      category: 1,
       price: 0,
       thumbnail: null,
       section_title: ['', '', ''],
@@ -203,6 +207,7 @@ export function CourseForm() {
             wallet,
             course.name,
             course.description,
+            course.category,
             course.price,
             thumbnail_cid,
             course.section_title,
@@ -303,6 +308,16 @@ export function CourseForm() {
                   description: e.target.value
                 })
               }
+            />
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              data-aos-duration="500"
+              htmlFor="description">Category</Label>
+            <SelectMenus
+              updateCourse={updateCourse}
             />
           </LabelInputContainer>
           <LabelInputContainer>

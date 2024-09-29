@@ -6,6 +6,7 @@ import LabelInputContainer from './label-input-container';
 interface Course {
     name: string;
     description: string;
+    category: number;
     price: number;
     thumbnail: File | null;
     section_title: [string, string, string];
