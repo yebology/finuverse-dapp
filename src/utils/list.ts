@@ -15,6 +15,10 @@ export const navList = [
     title: "Profile",
     url: "/profile",
   },
+  {
+    title: "Fetch (Dummy)",
+    url: "/fetch"
+  }
 ];
 
 export const dummyAnswer = [

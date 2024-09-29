@@ -3,11 +3,17 @@ import { commitmentLevel, connection } from "./constant";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 export function getProvider(wallet: AnchorWallet) {
-    if (!wallet) {
-        console.log("Wallet not connected!");
-        return;
-    }
-    return new AnchorProvider(connection, wallet, {
-        preflightCommitment: commitmentLevel
-    });
-};
+  if (!wallet) {
+    console.log("Wallet not connected!");
+    return;
+  }
+  return new AnchorProvider(connection, wallet, {
+    preflightCommitment: commitmentLevel,
+  });
+}
+
+export function getProviderWithoutLogin() {
+  return new AnchorProvider(connection, {} as any, {
+    preflightCommitment: "recent",
+  });
+}
