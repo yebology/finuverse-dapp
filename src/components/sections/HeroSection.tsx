@@ -38,7 +38,7 @@ export const HeroSection = () => {
               }}
             >
               {" "}
-              Education{" "}
+              Education.{" "}
             </span>
           </h1>
           <p className="my-5 text-n-2 dark:text-gray-300 text-md">
