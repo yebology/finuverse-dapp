@@ -17,7 +17,7 @@ interface CourseFinnishedprops {
             dragConstraints={{ left: -100, right: 100 }} 
             className="course-buy bg-white p-4 rounded-md shadow-md text-center border border-gray-300" 
         >
-        <label className="text-lg font-medium">Course Finnished</label>
+        <label className="text-lg font-medium">Course Finished</label>
         <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
