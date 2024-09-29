@@ -3,7 +3,7 @@ import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { getProvider, getProviderWithoutLogin } from "../utils/helper";
 import { web3, Program } from "@project-serum/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { LAMPORTS_PER_SOL, SystemProgram } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { programId, programInterface } from "../utils/constant";
 import { Buffer } from "buffer";
 
@@ -69,8 +69,8 @@ export async function createCourse(
     .rpc();
 }
 
-export function getCourse() {
-  return loadAllCourse();
+export async function getCourse() {
+  return await loadAllCourse();
 }
 
 async function loadAllCourse() {
@@ -84,8 +84,28 @@ async function loadAllCourse() {
     const allCourse = await program.account.course.all();
     const courseList = structuredCourse(allCourse);
     console.log(courseList);
+    return courseList;
   } catch (error) {
     console.log(error);
+    return;
+  }
+}
+
+export async function getUploadedCourse(wallet: AnchorWallet | undefined) {
+  return await loadUploadedCourse(wallet);
+}
+
+async function loadUploadedCourse(wallet: AnchorWallet | undefined) {
+  try {
+    const courseList = await getCourse();
+    const userPubkey = wallet!.publicKey.toString();
+    const filteredCourse = courseList.filter(
+      (course: any) => course.creator === userPubkey
+    );
+    return filteredCourse;
+  } catch (error) {
+    console.log(error);
+    return;
   }
 }
 
@@ -128,25 +148,89 @@ export async function buyCourse(
   const systemProgramId = SystemProgram.programId;
 
   const id = idConverted.toArrayLike(Buffer, "le", 8);
-  const [buyPda] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("buy"), provider.wallet.publicKey.toBuffer(), id],
-    program.programId
-  );
-  const [coursePda] = web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("course"), " " ,id],
-    program.programId
-  );
+  const allCourse = await getCourse();
 
-  await program.methods
-    .buyCourse(idConverted)
-    .accounts({
-      buy: buyPda,
-      course: coursePda,
-      buyer: provider.wallet.publicKey,
-      to: "",
-      systemProgram: systemProgramId,
-    })
-    .rpc();
+  if (allCourse) {
+    const specificCourse = allCourse.find(
+      (course: any) => course.id === courseId
+    );
+    const creator = specificCourse.creator;
+    const creatorPubkey = new PublicKey(creator);
+
+    const [buyPda] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("buy"), provider.wallet.publicKey.toBuffer(), id],
+      program.programId
+    );
+    const [coursePda] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("course"), creatorPubkey.toBuffer(), id],
+      program.programId
+    );
+
+    await program.methods
+      .buyCourse(idConverted)
+      .accounts({
+        buy: buyPda,
+        course: coursePda,
+        buyer: provider.wallet.publicKey,
+        to: creatorPubkey,
+        systemProgram: systemProgramId,
+      })
+      .rpc();
+  }
+}
+
+export async function getBoughtCourse(wallet: AnchorWallet | undefined) {
+  return await loadBoughtCourse(wallet);
+}
+
+async function loadBoughtCourse(wallet: AnchorWallet | undefined) {
+  try {
+    const provider = getProviderWithoutLogin();
+    if (!provider) {
+      console.log("Provider isn't available.");
+      return;
+    }
+
+    const program = new Program(programInterface, programId, provider);
+    const allBoughtCourse = await program.account.buy.all();
+    if (allBoughtCourse) {
+      const filteredCourse = await structuredBoughtCourse(
+        allBoughtCourse,
+        wallet
+      );
+      console.log(filteredCourse);
+      return filteredCourse;
+    }
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
+
+async function structuredBoughtCourse(
+  data: any,
+  wallet: AnchorWallet | undefined
+) {
+  const boughtList = data.map((bought: any) => ({
+    courseId: bought.account.courseId.toNumber(),
+    buyer: bought.account.buyer.toString(),
+  }));
+  const userPubkey = wallet!.publicKey.toString();
+  const filteredBought = boughtList.filter(
+    (bought: any) => bought.buyer === userPubkey
+  );
+  const courseList = await getCourse();
+  if (filteredBought) {
+    const filteredCourse = filteredBought.map((bought: any) => {
+      const filtered = courseList.find(
+        (course: any) => course.id === bought.courseId
+      );
+      if (filtered) {
+        return filtered;
+      }
+    });
+    return filteredCourse;
+  }
 }
 
 export async function rateCourse(
@@ -225,5 +309,67 @@ export async function completeCourse(
   courseId: number,
   correctAnswer: number
 ) {
-  
+  const provider = getProvider(wallet!);
+  if (!provider) {
+    console.log("Provider isn't available.");
+    return;
+  }
+
+  const program = new Program(programInterface, programId, provider);
+  const systemProgramId = SystemProgram.programId;
+
+  const idConverted = new BN(courseId);
+  const answerConverted = new BN(correctAnswer);
+
+  const id = idConverted.toArrayLike(Buffer, "le", 8);
+  const [completePda] = web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("complete"), wallet?.publicKey.toBuffer(), id],
+    program.programId
+  );
+
+  await program.methods
+    .completeCourse(idConverted, answerConverted)
+    .accounts({
+      complete: completePda,
+      user: provider.wallet.publicKey,
+      systemProgram: systemProgramId
+    })
+    .rpc();
+}
+
+export async function getCompletedCourse(wallet : AnchorWallet | undefined) {
+  return await loadCompletedCourse(wallet);
+}
+
+async function loadCompletedCourse(wallet : AnchorWallet | undefined) {
+  try {
+    const provider = getProviderWithoutLogin()
+    if (!provider) {
+      console.log("Provider isn't available")
+      return;
+    }
+
+    const program = new Program(programInterface, programId, provider);
+    const allCompletedCourse = await program.account.complete.all();
+    const convertedAllCompletedCourse = structuredCompletedCourse(allCompletedCourse, wallet)
+    console.log(convertedAllCompletedCourse)
+    return convertedAllCompletedCourse;
+  }
+  catch(error) {
+    console.log(error)
+    return;
+  }
+}
+
+function structuredCompletedCourse(data : any, wallet : AnchorWallet | undefined) {
+  const completedCourseList = data.map((complete : any) => ({
+    user: complete.account.user.toString(),
+    courseId: complete.account.courseId.toNumber(),
+    correctAnswer: complete.account.correctAnswer.toNumber()
+  }))
+  const userPubkey = wallet?.publicKey.toString();
+  const filteredCompletedCourse = completedCourseList.filter(
+    (complete : any) => complete.user === userPubkey
+  );
+  return filteredCompletedCourse;
 }
