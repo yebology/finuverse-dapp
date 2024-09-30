@@ -1,63 +1,273 @@
 {
-    "version": "0.1.0",
-    "name": "smartcontract",
-    "instructions": [
-      {
-        "name": "buyCourse",
-        "accounts": [
-          {
-            "name": "buy",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "course",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "buyer",
-            "isMut": true,
-            "isSigner": true
-          },
-          {
-            "name": "to",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
+  "version": "0.1.0",
+  "name": "smartcontract",
+  "instructions": [
+    {
+      "name": "buyCourse",
+      "accounts": [
+        {
+          "name": "buy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "course",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "to",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "courseId",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "createCourse",
+      "accounts": [
+        {
+          "name": "course",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "u64"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "u64"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "thumbnail",
+          "type": "string"
+        },
+        {
+          "name": "sectionTitle",
+          "type": {
+            "array": [
+              "string",
+              3
+            ]
           }
-        ],
-        "args": [
+        },
+        {
+          "name": "sectionDescription",
+          "type": {
+            "array": [
+              "string",
+              3
+            ]
+          }
+        },
+        {
+          "name": "sectionDuration",
+          "type": {
+            "array": [
+              "u64",
+              3
+            ]
+          }
+        },
+        {
+          "name": "sectionVideo",
+          "type": {
+            "array": [
+              "string",
+              3
+            ]
+          }
+        },
+        {
+          "name": "questionList",
+          "type": {
+            "array": [
+              "string",
+              3
+            ]
+          }
+        },
+        {
+          "name": "answerList",
+          "type": {
+            "array": [
+              "string",
+              3
+            ]
+          }
+        },
+        {
+          "name": "firstAnswerOptions",
+          "type": {
+            "array": [
+              "string",
+              4
+            ]
+          }
+        },
+        {
+          "name": "secondAnswerOptions",
+          "type": {
+            "array": [
+              "string",
+              4
+            ]
+          }
+        },
+        {
+          "name": "thirdAnswerOptions",
+          "type": {
+            "array": [
+              "string",
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "rateCourse",
+      "accounts": [
+        {
+          "name": "rate",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "courseId",
+          "type": "u64"
+        },
+        {
+          "name": "rating",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "completeCourse",
+      "accounts": [
+        {
+          "name": "complete",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "courseId",
+          "type": "u64"
+        },
+        {
+          "name": "correctAnswer",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Buy",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "courseId",
             "type": "u64"
+          },
+          {
+            "name": "buyer",
+            "type": "publicKey"
           }
         ]
-      },
-      {
-        "name": "createCourse",
-        "accounts": [
+      }
+    },
+    {
+      "name": "Complete",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            "name": "course",
-            "isMut": true,
-            "isSigner": false
+            "name": "user",
+            "type": "publicKey"
           },
           {
-            "name": "creator",
-            "isMut": true,
-            "isSigner": true
+            "name": "courseId",
+            "type": "u64"
           },
           {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
+            "name": "correctAnswer",
+            "type": "u64"
           }
-        ],
-        "args": [
+        ]
+      }
+    },
+    {
+      "name": "Course",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "id",
             "type": "u64"
@@ -67,11 +277,23 @@
             "type": "string"
           },
           {
+            "name": "creator",
+            "type": "publicKey"
+          },
+          {
             "name": "description",
             "type": "string"
           },
           {
+            "name": "category",
+            "type": "u64"
+          },
+          {
             "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "buyer",
             "type": "u64"
           },
           {
@@ -160,27 +382,17 @@
             }
           }
         ]
-      },
-      {
-        "name": "rateCourse",
-        "accounts": [
-          {
-            "name": "rate",
-            "isMut": true,
-            "isSigner": false
-          },
+      }
+    },
+    {
+      "name": "Rate",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "user",
-            "isMut": true,
-            "isSigner": true
+            "type": "publicKey"
           },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          }
-        ],
-        "args": [
           {
             "name": "courseId",
             "type": "u64"
@@ -190,313 +402,109 @@
             "type": "u64"
           }
         ]
-      },
-      {
-        "name": "completeCourse",
-        "accounts": [
-          {
-            "name": "complete",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "user",
-            "isMut": true,
-            "isSigner": true
-          },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          }
-        ],
-        "args": [
-          {
-            "name": "courseId",
-            "type": "u64"
-          },
-          {
-            "name": "correctAnswer",
-            "type": "u64"
-          }
-        ]
       }
-    ],
-    "accounts": [
-      {
-        "name": "Buy",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "courseId",
-              "type": "u64"
-            },
-            {
-              "name": "buyer",
-              "type": "publicKey"
-            }
-          ]
-        }
-      },
-      {
-        "name": "Complete",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "user",
-              "type": "publicKey"
-            },
-            {
-              "name": "courseId",
-              "type": "u64"
-            },
-            {
-              "name": "correctAnswer",
-              "type": "u64"
-            }
-          ]
-        }
-      },
-      {
-        "name": "Course",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "id",
-              "type": "u64"
-            },
-            {
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "name": "creator",
-              "type": "publicKey"
-            },
-            {
-              "name": "description",
-              "type": "string"
-            },
-            {
-              "name": "price",
-              "type": "u64"
-            },
-            {
-              "name": "buyer",
-              "type": "u64"
-            },
-            {
-              "name": "thumbnail",
-              "type": "string"
-            },
-            {
-              "name": "sectionTitle",
-              "type": {
-                "array": [
-                  "string",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "sectionDescription",
-              "type": {
-                "array": [
-                  "string",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "sectionDuration",
-              "type": {
-                "array": [
-                  "u64",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "sectionVideo",
-              "type": {
-                "array": [
-                  "string",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "questionList",
-              "type": {
-                "array": [
-                  "string",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "answerList",
-              "type": {
-                "array": [
-                  "string",
-                  3
-                ]
-              }
-            },
-            {
-              "name": "firstAnswerOptions",
-              "type": {
-                "array": [
-                  "string",
-                  4
-                ]
-              }
-            },
-            {
-              "name": "secondAnswerOptions",
-              "type": {
-                "array": [
-                  "string",
-                  4
-                ]
-              }
-            },
-            {
-              "name": "thirdAnswerOptions",
-              "type": {
-                "array": [
-                  "string",
-                  4
-                ]
-              }
-            }
-          ]
-        }
-      },
-      {
-        "name": "Rate",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "user",
-              "type": "publicKey"
-            },
-            {
-              "name": "courseId",
-              "type": "u64"
-            },
-            {
-              "name": "rating",
-              "type": "u64"
-            }
-          ]
-        }
-      }
-    ],
-    "events": [
-      {
-        "name": "CoursePurchased",
-        "fields": [
-          {
-            "name": "buyer",
-            "type": "publicKey",
-            "index": false
-          },
-          {
-            "name": "courseId",
-            "type": "u64",
-            "index": false
-          }
-        ]
-      },
-      {
-        "name": "CreateCoursed",
-        "fields": [
-          {
-            "name": "creator",
-            "type": "publicKey",
-            "index": false
-          },
-          {
-            "name": "courseAccount",
-            "type": "publicKey",
-            "index": false
-          }
-        ]
-      },
-      {
-        "name": "RateCreated",
-        "fields": [
-          {
-            "name": "user",
-            "type": "publicKey",
-            "index": false
-          },
-          {
-            "name": "rating",
-            "type": "u64",
-            "index": false
-          },
-          {
-            "name": "courseAccount",
-            "type": "publicKey",
-            "index": false
-          }
-        ]
-      },
-      {
-        "name": "CompleteCreated",
-        "fields": [
-          {
-            "name": "user",
-            "type": "publicKey",
-            "index": false
-          },
-          {
-            "name": "complete",
-            "type": "u64",
-            "index": false
-          },
-          {
-            "name": "completeAccount",
-            "type": "publicKey",
-            "index": false
-          }
-        ]
-      }
-    ],
-    "errors": [
-      {
-        "code": 6000,
-        "name": "InsufficientFunds",
-        "msg": "Insufficient funds for the purchase."
-      },
-      {
-        "code": 6001,
-        "name": "InvalidCourseInput",
-        "msg": "Invalid Course Input"
-      },
-      {
-        "code": 6002,
-        "name": "InvalidCourseId",
-        "msg": "Invalid course id."
-      },
-      {
-        "code": 6003,
-        "name": "InvalidRating",
-        "msg": "Invalid rating."
-      },
-      {
-        "code": 6004,
-        "name": "InvalidCompleteAnswer",
-        "msg": "Invalid complete answer"
-      }
-    ],
-    "metadata": {
-      "address": "HU9CCiFbr4kvLbdbVQJDknb9m3Y5jQ3fqxiYgRQdvGMB"
     }
+  ],
+  "events": [
+    {
+      "name": "CoursePurchased",
+      "fields": [
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "courseId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CreateCoursed",
+      "fields": [
+        {
+          "name": "creator",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "courseAccount",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RateCreated",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "rating",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "courseAccount",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CompleteCreated",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "complete",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "completeAccount",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds for the purchase."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidCourseInput",
+      "msg": "Invalid Course Input"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidCourseId",
+      "msg": "Invalid course id."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidRating",
+      "msg": "Invalid rating."
+    },
+    {
+      "code": 6004,
+      "name": "InvalidCompleteAnswer",
+      "msg": "Invalid complete answer"
+    }
+  ],
+  "metadata": {
+    "address": "B8Tzb2B8y8PMxtFwhF8jyjp5gcQLxMDAekiMNvSrCvAz"
   }
+}
