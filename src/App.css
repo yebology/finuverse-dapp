@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.search-bar {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+/*Course Card*/
+.course-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    width: 300px;
+    margin: 10px;
+}
+
+.course-thumbnail {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.course-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Jumlah baris */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/*Course Page*/
+.courses-page {
+    padding: 20px;
+}
+
+.courses-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .course-card {
+        width: 100%;
+    }
+}
+
+
+/*Course Page Detail*/
+.course-detail-page {
+    padding: 20px;
+}
+
+.course-thumbnail {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.buy-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buy-button:hover {
+    background-color: #0056b3;
+}
+
+.rating-section {
+    margin-top: 20px;
+}
+
+.user-rating {
+    margin-top: 10px;
+}
+
+.stars {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.star {
+    font-size: 24px;
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.star.filled {
+    color: #ffcc00;
+}
+
+.star:hover,
+.star.filled:hover {
+    color: #ff9900;
+}
+
+.user-rating button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.user-rating button:hover {
+    background-color: #218838;
+}
+
+.sections {
+    margin-top: 30px;
+}
+
+.section {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.section h3 {
+    cursor: pointer;
+}
+
+.section-content {
+    margin-top: 10px;
+}
+
+.questions-section {
+    margin-top: 30px;
+}
+
+.question {
+    margin-bottom: 15px;
+}
+
+.question label {
+    display: block;
+}
+
+/*Category Filter*/
+.category-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-button {
+    padding: 8px 16px;
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.filter-button.active,
+.filter-button:hover {
+    background-color: #007bff;
+    color: white;
+}
