@@ -13,7 +13,7 @@ interface Question {
     id: string;
     question: string;
     options: string[];
-    selectedOption?: string;
+    correctAnswer?: string; // Opsional: Jika Anda ingin menambahkan jawaban benar
 }
 
 interface CourseDetail {
@@ -33,43 +33,74 @@ const CourseDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [course, setCourse] = useState<CourseDetail | null>(null);
     const [expandedSections, setExpandedSections] = useState<string[]>([]);
-    const [questions, setQuestions] = useState<Question[]>([]);
-    const [userRating, setUserRating] = useState<number>(0); // Mengubah nama state menjadi userRating
+    const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+    const [submitted, setSubmitted] = useState<boolean>(false);
+    const [score, setScore] = useState<number>(0);
+    const [userRating, setUserRating] = useState<number>(0);
 
     useEffect(() => {
-        // Fetch course detail dari API atau data dummy
         const fetchCourseDetail = async () => {
-            // Contoh data dummy
-            const data: CourseDetail = {
-                id: '1',
-                thumbnail: 'https://via.placeholder.com/600x300',
-                title: 'React for Beginners',
-                buyers: 1500,
-                description: 'Detailed description of the React course.',
-                price: 49.99,
-                rating: 4.5,
-                ratingCount: 200,
-                sections: [
-                    {
-                        id: 's1',
-                        title: 'Introduction',
-                        duration: '10:00',
-                        videoUrl: 'https://www.example.com/video1',
-                        description: 'Introduction to the course.',
-                    },
-                    // Tambahkan lebih banyak section sesuai kebutuhan
-                ],
-                questions: [
-                    {
-                        id: 'q1',
-                        question: 'How satisfied are you with this course?',
-                        options: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'],
-                    },
-                    // Tambahkan lebih banyak pertanyaan sesuai kebutuhan
-                ],
-            };
-            setCourse(data);
-            setQuestions(data.questions);
+            try {
+                // Fetch data dari API atau gunakan data dummy
+                const data: CourseDetail = {
+                    id: '1',
+                    thumbnail: 'https://via.placeholder.com/600x300',
+                    title: 'React for Beginners',
+                    buyers: 1500,
+                    description: 'Detailed description of the React course.',
+                    price: 49.99,
+                    rating: 4.5,
+                    ratingCount: 200,
+                    sections: [
+                        {
+                            id: 's1',
+                            title: 'Introduction',
+                            duration: '10:00',
+                            videoUrl: 'https://www.example.com/video1',
+                            description: 'Introduction to the course.',
+                        },
+                        // Tambahkan lebih banyak section sesuai kebutuhan
+                    ],
+                    questions: [
+                        {
+                            id: 'q1',
+                            question: 'Apa yang dimaksud dengan JSX dalam React?',
+                            options: [
+                                'Sebuah library untuk manajemen state',
+                                'Sintaks JavaScript yang mirip XML',
+                                'Framework CSS untuk styling',
+                                'Alat untuk testing aplikasi',
+                            ],
+                            correctAnswer: 'Sintaks JavaScript yang mirip XML', // Opsional
+                        },
+                        {
+                            id: 'q2',
+                            question: 'Apa fungsi dari useState dalam React?',
+                            options: [
+                                'Mengelola side effects',
+                                'Mengatur routing aplikasi',
+                                'Menangani state lokal dalam komponen',
+                                'Membuat elemen virtual DOM',
+                            ],
+                            correctAnswer: 'Menangani state lokal dalam komponen', // Opsional
+                        },
+                        {
+                            id: 'q3',
+                            question: 'Bagaimana cara mengirim props ke komponen anak?',
+                            options: [
+                                'Menggunakan state',
+                                'Menggunakan context API',
+                                'Mengoper props melalui atribut JSX',
+                                'Tidak bisa mengirim props ke komponen anak',
+                            ],
+                            correctAnswer: 'Mengoper props melalui atribut JSX', // Opsional
+                        },
+                    ],
+                };
+                setCourse(data);
+            } catch (error) {
+                console.error('Error fetching course detail:', error);
+            }
         };
 
         fetchCourseDetail();
@@ -84,17 +115,24 @@ const CourseDetailPage: React.FC = () => {
     };
 
     const handleOptionChange = (questionId: string, option: string) => {
-        setQuestions((prev) =>
-            prev.map((q) =>
-                q.id === questionId ? { ...q, selectedOption: option } : q
-            )
-        );
+        setAnswers((prev) => ({
+            ...prev,
+            [questionId]: option,
+        }));
     };
 
     const handleSubmit = () => {
-        // Handle submit logic, misalnya mengirim jawaban ke server
-        console.log('Submitted Answers:', questions);
-        alert('Terima kasih atas feedback Anda!');
+        if (course) {
+            let calculatedScore = 0;
+            course.questions.forEach((q) => {
+                if (q.correctAnswer && answers[q.id] === q.correctAnswer) {
+                    calculatedScore += 1;
+                }
+            });
+            setScore(calculatedScore);
+            setSubmitted(true);
+            alert('Terima kasih atas partisipasi Anda!');
+        }
     };
 
     const handleRating = (rating: number) => {
@@ -168,17 +206,19 @@ const CourseDetailPage: React.FC = () => {
                 ))}
             </div>
             <div className="questions-section">
-                <h2>Feedback</h2>
-                {questions.map((q) => (
+                <h2>Test Pemahaman</h2>
+                {course.questions.map((q, index) => (
                     <div key={q.id} className="question">
-                        <p>{q.question}</p>
+                        <p>
+                            <strong>Soal {index + 1}:</strong> {q.question}
+                        </p>
                         {q.options.map((option) => (
                             <label key={option}>
                                 <input
                                     type="radio"
                                     name={q.id}
                                     value={option}
-                                    checked={q.selectedOption === option}
+                                    checked={answers[q.id] === option}
                                     onChange={() => handleOptionChange(q.id, option)}
                                 />
                                 {option}
@@ -186,7 +226,18 @@ const CourseDetailPage: React.FC = () => {
                         ))}
                     </div>
                 ))}
-                <button onClick={handleSubmit}>Submit</button>
+                {!submitted ? (
+                    <button onClick={handleSubmit} disabled={Object.keys(answers).length < course.questions.length}>
+                        Submit Jawaban
+                    </button>
+                ) : (
+                    <div className="results">
+                        <h3>Hasil Tes Anda:</h3>
+                        <p>
+                            Anda menjawab {score} dari {course.questions.length} soal dengan benar.
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );
