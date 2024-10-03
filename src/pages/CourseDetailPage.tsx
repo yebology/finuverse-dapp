@@ -59,6 +59,13 @@ const CourseDetailPage: React.FC = () => {
                             videoUrl: 'https://www.example.com/video1',
                             description: 'Introduction to the course.',
                         },
+                        {
+                            id: 's2',
+                            title: 'Getting Started',
+                            duration: '15:00',
+                            videoUrl: 'https://www.example.com/video2',
+                            description: 'Getting started with React.',
+                        },
                         // Tambahkan lebih banyak section sesuai kebutuhan
                     ],
                     questions: [
@@ -163,8 +170,10 @@ const CourseDetailPage: React.FC = () => {
     return (
         <div className="course-detail-page">
             <h1>{course.title}</h1>
-            <img src={course.thumbnail} alt={course.title} className="course-thumbnail" />
-            <p>{course.description}</p>
+            <img src={course.thumbnail} alt={course.title} className="course-thumbnail"/>
+            <div className="prose">
+                <p>{course.description}</p>
+            </div>
             <p>Buyers: {course.buyers}</p>
             <p>Price: ${course.price}</p>
             <button className="buy-button">Buy Course</button>
@@ -180,8 +189,8 @@ const CourseDetailPage: React.FC = () => {
                                 className={`star ${userRating >= star ? 'filled' : ''}`}
                                 onClick={() => setUserRating(star)}
                             >
-                ★
-              </span>
+                                ★
+                            </span>
                         ))}
                     </div>
                     {userRating > 0 && (
@@ -198,7 +207,7 @@ const CourseDetailPage: React.FC = () => {
                         </h3>
                         {expandedSections.includes(section.id) && (
                             <div className="section-content">
-                                <video src={section.videoUrl} controls width="600" />
+                                <video src={section.videoUrl} controls className="w-full h-auto rounded-md"/>
                                 <p>{section.description}</p>
                             </div>
                         )}
@@ -213,13 +222,14 @@ const CourseDetailPage: React.FC = () => {
                             <strong>Soal {index + 1}:</strong> {q.question}
                         </p>
                         {q.options.map((option) => (
-                            <label key={option}>
+                            <label key={option} className="flex items-center mb-1">
                                 <input
                                     type="radio"
                                     name={q.id}
                                     value={option}
                                     checked={answers[q.id] === option}
                                     onChange={() => handleOptionChange(q.id, option)}
+                                    className="mr-2"
                                 />
                                 {option}
                             </label>
@@ -227,7 +237,11 @@ const CourseDetailPage: React.FC = () => {
                     </div>
                 ))}
                 {!submitted ? (
-                    <button onClick={handleSubmit} disabled={Object.keys(answers).length < course.questions.length}>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={Object.keys(answers).length < course.questions.length}
+                        className="px-6 py-3 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300 disabled:bg-neutralDark disabled:cursor-not-allowed"
+                    >
                         Submit Jawaban
                     </button>
                 ) : (

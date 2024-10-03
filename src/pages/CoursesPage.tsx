@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import CourseCard from '../components/CourseCard';
 import CategoryFilter from '../components/CategoryFilter';
-import '../App.css'
 
 interface Course {
     id: string;
@@ -19,7 +18,6 @@ const CoursesPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [courses, setCourses] = useState<Course[]>([]);
-
 
     useEffect(() => {
         // Fetch courses dari API atau data dummy
@@ -71,11 +69,17 @@ const CoursesPage: React.FC = () => {
     });
 
     return (
-        <div className="courses-page">
-            <h1>Courses</h1>
-            <SearchBar value={searchTerm} onChange={setSearchTerm} />
-            <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
-            <div className="courses-list">
+        <div className="courses-page bg-neutralLight min-h-screen">
+            <h1 className="text-3xl font-bold text-primary mb-6 text-center">Courses</h1>
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-6">
+                <div className="flex-1 w-full">
+                    <SearchBar value={searchTerm} onChange={setSearchTerm} />
+                </div>
+                <div className="w-full md:w-48">
+                    <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
+                </div>
+            </div>
+            <div className="courses-list flex flex-wrap gap-5 justify-center">
                 {filteredCourses.map((course) => (
                     <CourseCard key={course.id} {...course} />
                 ))}
