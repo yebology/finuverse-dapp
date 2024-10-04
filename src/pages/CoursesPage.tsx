@@ -69,7 +69,7 @@ const CoursesPage: React.FC = () => {
     });
 
     return (
-        <div className="courses-page bg-neutralLight min-h-screen">
+        <div className="courses-page font-poppins bg-neutralLight min-h-screen">
             <h1 className="text-3xl font-bold text-primary mb-6 text-center">Courses</h1>
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-6">
                 <div className="flex-1 w-full">

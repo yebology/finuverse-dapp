@@ -20,6 +20,8 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.95.3",
     "@tabler/icons-react": "^3.17.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@tailwindcss/typography": "^0.5.15",
     "aos": "^2.3.4",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",

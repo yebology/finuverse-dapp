@@ -5,6 +5,8 @@ import { Footer } from "./components/fixed/Footer";
 import { CourseForm } from "./views/CourseForm";
 import { Fetch } from "./views/Fetch";
 import { Profile } from "./views/Profile";
+import CoursesPage from "./pages/CoursesPage";
+import CourseDetailPage from "./pages/CourseDetailPage";
 // import { CompleteModal } from "./components/modals/CompleteModal";
 
 export const Content = () => {
@@ -16,6 +18,8 @@ export const Content = () => {
         <Route path="/create_course" element={<CourseForm />} />
         <Route path="/profile" element={<Profile />}/>
         <Route path="/fetch" element={<Fetch />}/>
+        <Route path="/course" element={<CoursesPage />} />
+        <Route path="/course/:id" element={<CourseDetailPage />} />
       </Routes>
       <Footer />
       {/* <CompleteModal /> */}

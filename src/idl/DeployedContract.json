@@ -71,10 +71,6 @@
           "type": "string"
         },
         {
-          "name": "category",
-          "type": "u64"
-        },
-        {
           "name": "price",
           "type": "u64"
         },
@@ -85,82 +81,55 @@
         {
           "name": "sectionTitle",
           "type": {
-            "array": [
-              "string",
-              3
-            ]
+            "array": ["string", 3]
           }
         },
         {
           "name": "sectionDescription",
           "type": {
-            "array": [
-              "string",
-              3
-            ]
+            "array": ["string", 3]
           }
         },
         {
           "name": "sectionDuration",
           "type": {
-            "array": [
-              "u64",
-              3
-            ]
+            "array": ["u64", 3]
           }
         },
         {
           "name": "sectionVideo",
           "type": {
-            "array": [
-              "string",
-              3
-            ]
+            "array": ["string", 3]
           }
         },
         {
           "name": "questionList",
           "type": {
-            "array": [
-              "string",
-              3
-            ]
+            "array": ["string", 3]
           }
         },
         {
           "name": "answerList",
           "type": {
-            "array": [
-              "string",
-              3
-            ]
+            "array": ["string", 3]
           }
         },
         {
           "name": "firstAnswerOptions",
           "type": {
-            "array": [
-              "string",
-              4
-            ]
+            "array": ["string", 4]
           }
         },
         {
           "name": "secondAnswerOptions",
           "type": {
-            "array": [
-              "string",
-              4
-            ]
+            "array": ["string", 4]
           }
         },
         {
           "name": "thirdAnswerOptions",
           "type": {
-            "array": [
-              "string",
-              4
-            ]
+            "array": ["string", 4]
           }
         }
       ]
@@ -285,10 +254,6 @@
             "type": "string"
           },
           {
-            "name": "category",
-            "type": "u64"
-          },
-          {
             "name": "price",
             "type": "u64"
           },
@@ -303,82 +268,55 @@
           {
             "name": "sectionTitle",
             "type": {
-              "array": [
-                "string",
-                3
-              ]
+              "array": ["string", 3]
             }
           },
           {
             "name": "sectionDescription",
             "type": {
-              "array": [
-                "string",
-                3
-              ]
+              "array": ["string", 3]
             }
           },
           {
             "name": "sectionDuration",
             "type": {
-              "array": [
-                "u64",
-                3
-              ]
+              "array": ["u64", 3]
             }
           },
           {
             "name": "sectionVideo",
             "type": {
-              "array": [
-                "string",
-                3
-              ]
+              "array": ["string", 3]
             }
           },
           {
             "name": "questionList",
             "type": {
-              "array": [
-                "string",
-                3
-              ]
+              "array": ["string", 3]
             }
           },
           {
             "name": "answerList",
             "type": {
-              "array": [
-                "string",
-                3
-              ]
+              "array": ["string", 3]
             }
           },
           {
             "name": "firstAnswerOptions",
             "type": {
-              "array": [
-                "string",
-                4
-              ]
+              "array": ["string", 4]
             }
           },
           {
             "name": "secondAnswerOptions",
             "type": {
-              "array": [
-                "string",
-                4
-              ]
+              "array": ["string", 4]
             }
           },
           {
             "name": "thirdAnswerOptions",
             "type": {
-              "array": [
-                "string",
-                4
-              ]
+              "array": ["string", 4]
             }
           }
         ]
@@ -505,6 +443,6 @@
     }
   ],
   "metadata": {
-    "address": "B8Tzb2B8y8PMxtFwhF8jyjp5gcQLxMDAekiMNvSrCvAz"
+    "address": "HU9CCiFbr4kvLbdbVQJDknb9m3Y5jQ3fqxiYgRQdvGMB"
   }
 }

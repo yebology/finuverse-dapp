@@ -126,7 +126,7 @@ export const Profile = () => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <div className="flex items-center justify-center h-screen">
+    <div className="font-poppins flex items-center justify-center h-screen">
       <div className="rounded-lg flex flex-col">
         <div className="flex flex-col md:flex-row md:items-start mb-8">
           <div className="profile-section border-b border-gray-300 pb-4 flex justify-center mb-4 md:mb-0 md:border-b-0 md:border-r border-gray-300 md:pr-4">
