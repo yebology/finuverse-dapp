@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import LoadingScreen from "../components/ui/loading-screen";
-import { getCourse, getCourseBuyers, getCourseRating } from "../services/course";
+import { buyCourse, getCourse, getCourseBuyers, getCourseRating, rateCourse } from "../services/course";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 interface Section {
   id: string;
@@ -41,18 +42,25 @@ const CourseDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingBuyer, setLoadingBuyer] = useState(true);
   const [loadingRating, setLoadingRating] = useState(true);
+  const [loadingBuy, setLoadingBuy] = useState(false)
+  const [loadingRate, setLoadingRate] = useState(false)
   const [score, setScore] = useState<number>(0);
   const [userRating, setUserRating] = useState<number>(0);
   const [totalBuyer, setTotalBuyer] = useState(0);
   const [rating, setRating] = useState(0);
+  const [rater, setRater] = useState(0)
+  const wallet = useAnchorWallet()
 
   useEffect(() => {
     const fetchTotalRating = async () => {
       if (course && id) {
         try {
           const [accumulateData, totalData] = await getCourseRating(parseInt(id))
-          if (accumulateData != null && totalData != null) {
-            // setRating(data)
+          if (accumulateData && totalData) {
+            setRating(accumulateData / totalData)
+            console.log(accumulateData)
+            console.log(totalData)
+            setRater(totalData)
           }
         }
         catch (error) {
@@ -134,31 +142,53 @@ const CourseDetailPage: React.FC = () => {
     }
   };
 
-  const handleRating = (rating: number) => {
-    if (!course) return;
-
-    const totalRating = course.rating * course.ratingCount;
-    const newRatingCount = course.ratingCount + 1;
-    const newRating = (totalRating + rating) / newRatingCount;
-
-    setCourse({
-      ...course,
-      rating: parseFloat(newRating.toFixed(1)),
-      ratingCount: newRatingCount,
-    });
-
-    setUserRating(0);
-
-    alert("Thankyou!");
+  const handleRating = async(rating: number) => {
+    if (id) {
+      setTimeout(() => {
+        setLoadingRate(true);
+      }, 10000);
+      try {
+        await rateCourse(wallet, parseInt(id), rating)
+        console.log("done")
+      }
+      catch (error) {
+        console.log(error)
+      }
+      finally {
+        setLoadingRate(false)
+        if (!loadingRate) {
+          console.log(loadingRate)
+          window.location.reload();
+        }
+      }
+    }
   };
 
-  if (loading || !course || loadingBuyer || loadingRating) {
+  const handleBuyCourse = async() => {
+    if (id) {
+      setTimeout(() => {
+        setLoadingBuy(true);
+      }, 15000);
+      try {
+        await buyCourse(wallet, parseInt(id))
+      }
+      catch (error) {
+        console.log(error)
+      }
+      finally {
+        setLoadingBuy(false)
+      }
+      console.log(loadingBuy)
+    }
+  }
+
+  if (loading || !course || loadingBuyer || loadingRating || loadingBuy || loadingRate) {
     return <LoadingScreen />;
   }
 
   return (
     <div className="course-detail-page font-poppins">
-      <h1 style={{ color: "#1f6feb" }} className="font-bold text-3xl mb-2">
+      <h1 style={{ color: "#1f6feb" }} className="font-bold text-4xl my-8">
         {course.name}
       </h1>
       <img
@@ -180,10 +210,12 @@ const CourseDetailPage: React.FC = () => {
           </span>
         </p>{" "}
       </div>
-      <button className="buy-button">Buy Course</button>
+      <button
+      onClick={() => handleBuyCourse()}
+      className="buy-button">Buy Course</button>
       <div className="rating-section">
         <p className="font-semibold">Rating : {rating} / 5</p>
-        <p className="font-semibold">Rated by {course.ratingCount} people</p>
+        <p className="font-semibold">Rated by {rater} people</p>
         <div className="user-rating">
           <p>Rate this course:</p>
           <div className="stars">

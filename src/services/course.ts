@@ -178,6 +178,7 @@ export async function buyCourse(
       })
       .rpc();
   }
+  console.log("done")
 }
 
 export async function getCourseBuyers(id : number) {
@@ -310,7 +311,7 @@ async function loadCourseRating(courseId: number) {
   const provider = getProviderWithoutLogin();
   if (!provider) {
     console.log("Provider isn't available!");
-    return;
+    return [null, null];
   }
 
   try {
