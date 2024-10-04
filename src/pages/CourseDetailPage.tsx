@@ -155,7 +155,16 @@ const CourseDetailPage: React.FC = () => {
         }
       })
       console.log(calculatedScore)
-      await completeCourse(wallet, parseInt(id), calculatedScore);
+      try {
+        
+      }
+      catch(error) {
+        console.log(error)
+      }
+      finally {
+
+      }
+      // await completeCourse(wallet, parseInt(id), calculatedScore);
       // setScore(calculatedScore);
       // setSubmitted(true);
       // alert("Thankyou for your participation!");

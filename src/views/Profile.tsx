@@ -16,6 +16,7 @@ import {
   getUploadedCourse,
 } from "../services/course";
 import LoadingScreen from "../components/ui/loading-screen";
+import CourseCard from "../components/CourseCard";
 
 interface Course {
   name: string;
@@ -77,23 +78,23 @@ export const Profile = () => {
     // Add more course objects as needed
   ]);
 
-  const fetchBoughtCourse = async (wallet : AnchorWallet) => {
+  const fetchBoughtCourse = async (wallet: AnchorWallet) => {
     const boughtCourse = await getBoughtCourse(wallet);
-    console.log("a")
+    console.log("a");
     setBoughtCourse(boughtCourse);
     return true;
   };
 
-  const fetchUploadedCourse = async (wallet : AnchorWallet) => {
+  const fetchUploadedCourse = async (wallet: AnchorWallet) => {
     const uploadedCourse = await getUploadedCourse(wallet);
-    console.log("a")
+    console.log("a");
     setUploadedCourse(uploadedCourse);
     return true;
   };
 
-  const fetchFinishedCourse = async (wallet : AnchorWallet) => {
+  const fetchFinishedCourse = async (wallet: AnchorWallet) => {
     const finishedCourse = await getCompletedCourse(wallet);
-    console.log("a")
+    console.log("a");
     setFinishedCourse(finishedCourse);
     return true;
   };
@@ -102,18 +103,18 @@ export const Profile = () => {
     const fetchData = async () => {
       const userPubkey = wallet?.publicKey.toString();
       try {
-        console.log("b")
-        setLoading(true)
+        console.log("b");
+        setLoading(true);
         if (userPubkey && wallet) {
           setUser(userPubkey);
           const doneFetchBought = await fetchBoughtCourse(wallet);
-          console.log("done")
+          console.log("done");
           const doneFetchUploaded = await fetchUploadedCourse(wallet);
-          console.log("don2")
+          console.log("don2");
           const doneFetchFinished = await fetchFinishedCourse(wallet);
-          console.log("done3")
+          console.log("done3");
           if (doneFetchFinished && doneFetchBought && doneFetchUploaded) {
-            setLoading(false)
+            setLoading(false);
           }
         }
       } catch (error) {
@@ -126,7 +127,7 @@ export const Profile = () => {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <div className="font-poppins flex items-center justify-center h-screen">
+    <div className="font-poppins flex items-center justify-center my-8">
       <div className="rounded-lg flex flex-col">
         <div className="flex flex-col md:flex-row md:items-start mb-8">
           <div className="profile-section border-b border-gray-300 pb-4 flex justify-center mb-4 md:mb-0 md:border-b-0 md:border-r border-gray-300 md:pr-4">
@@ -153,10 +154,36 @@ export const Profile = () => {
             </div>
           </div>
         </div>
-
-        {/* Second Row: Course List Below the Stats */}
-        <CourseList courses={courses} />
-        <CourseBought courses={courses} />
+        {uploadedCourse.length > 0 && (
+          <div className="my-6">
+            <h1
+              style={{ color: "#1f6feb" }}
+              className="mb-3 font-bold text-2xl"
+            >
+              Course Uploaded :{" "}
+            </h1>
+            <div className="grid grid-cols-4">
+              {uploadedCourse.map((course: any) => (
+                <CourseCard key={course.id} {...course} />
+              ))}
+            </div>
+          </div>
+        )}
+        {boughtCourse.length > 0 && (
+          <div className="my-6">
+            <h1
+              style={{ color: "#1f6feb" }}
+              className="mb-3 font-bold text-2xl"
+            >
+              Course Boughted :{" "}
+            </h1>
+            <div className="grid grid-cols-4">
+              {boughtCourse.map((course: any) => (
+                <CourseCard key={course.id} {...course} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -52,10 +52,6 @@ const CoursesPage: React.FC = () => {
     }
   }, [courses, selectedCategory, searchTerm]);
 
-  // const getBuyers = async() => {
-  //   const buyers = await getBoughtCourse()
-  // }
-
   if (loading) {
     return <LoadingScreen />;
   }
