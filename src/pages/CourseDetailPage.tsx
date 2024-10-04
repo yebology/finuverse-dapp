@@ -11,6 +11,7 @@ import {
 } from "../services/course";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { CompleteModal } from "../components/modals/CompleteModal";
 
 interface Section {
   id: string;
@@ -54,13 +55,12 @@ const CourseDetailPage: React.FC = () => {
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
-  const [submitted, setSubmitted] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [loadingBuyer, setLoadingBuyer] = useState(true);
   const [loadingRating, setLoadingRating] = useState(true);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [loadingRate, setLoadingRate] = useState(false);
-  const [score, setScore] = useState<number>(0);
+  const [loadingOpenModal, setLoadingOpenModal] = useState(false);
   const [userRating, setUserRating] = useState<number>(0);
   const [totalBuyer, setTotalBuyer] = useState(0);
   const [rating, setRating] = useState(0);
@@ -144,26 +144,23 @@ const CourseDetailPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     if (course && id) {
-      console.log(answers)
-      console.log(course.answerList)
+      console.log(answers);
+      console.log(course.answerList);
       let calculatedScore = 0;
       course.answerList.forEach((answer, index) => {
         if (answer == answers[index.toString()]) {
           calculatedScore += 1;
         }
-      })
-      console.log(calculatedScore)
+        setLoadingOpenModal(true);
+      });
       try {
-        
+      } catch (error) {
+        console.log(error);
+      } finally {
       }
-      catch(error) {
-        console.log(error)
-      }
-      finally {
-
-      }
+      console.log(calculatedScore);
       // await completeCourse(wallet, parseInt(id), calculatedScore);
       // setScore(calculatedScore);
       // setSubmitted(true);
@@ -191,17 +188,25 @@ const CourseDetailPage: React.FC = () => {
     }
   };
 
+  const onClose = () => {
+    setLoadingOpenModal(false);
+  };
+
   const handleBuyCourse = async () => {
     if (id) {
       setTimeout(() => {
         setLoadingBuy(true);
-      }, 15000);
+      }, 12000);
       try {
         await buyCourse(wallet, parseInt(id));
       } catch (error) {
         console.log(error);
       } finally {
         setLoadingBuy(false);
+        if (!loadingBuy) {
+          console.log(loadingBuy);
+          window.location.reload();
+        }
       }
       console.log(loadingBuy);
     }
@@ -219,163 +224,166 @@ const CourseDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="course-detail-page font-poppins">
-      <h1 style={{ color: "#1f6feb" }} className="font-bold text-4xl my-8">
-        {course.name}
-      </h1>
-      <img
-        src={`https://cdn.prod.website-files.com/5e318ddf83dd66608255c3b6/62b1de2e8e142538f54863b6_What%20is%20course%20design.jpg`}
-        alt={course.name}
-        className="course-thumbnail"
-      />
-      <div className="my-4">
-        <h5 className="font-semibold">Course Description : </h5>
-        <div className="prose">
-          <p>{course.description}</p>
+    <div className="relative course-detail-page font-poppins">
+      {loadingOpenModal && (
+        <CompleteModal userAnswer={answers} answerList={course.answerList} onClose={onClose}/>
+      )}
+      <div className={`${loadingOpenModal ? "blur-sm" : ""}`}>
+        <h1 style={{ color: "#1f6feb" }} className="font-bold text-4xl my-8">
+          {course.name}
+        </h1>
+        <img
+          src={`https://cdn.prod.website-files.com/5e318ddf83dd66608255c3b6/62b1de2e8e142538f54863b6_What%20is%20course%20design.jpg`}
+          alt={course.name}
+          className="course-thumbnail"
+        />
+        <div className="my-4">
+          <h5 className="font-semibold">Course Description : </h5>
+          <div className="prose">
+            <p>{course.description}</p>
+          </div>
         </div>
-      </div>
-      <div className="mb-2">
-        <p className="font-semibold">
-          Buyers : <span className="font-normal">{totalBuyer}</span>
-        </p>{" "}
-        <p className="font-semibold">
-          Price :{" "}
-          <span className="font-normal">
-            {course.price / LAMPORTS_PER_SOL} SOL
-          </span>
-        </p>{" "}
-      </div>
-      <button onClick={() => handleBuyCourse()} className="buy-button">
-        Buy Course
-      </button>
-      <div className="rating-section">
-        <p className="font-semibold">Rating : {rating} / 5</p>
-        <p className="font-semibold">Rated by {rater} people</p>
-        <div className="user-rating">
-          <p>Rate this course:</p>
-          <div className="stars">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={`star ${userRating >= star ? "filled" : ""}`}
-                onClick={() => setUserRating(star)}
-              >
-                ★
-              </span>
+        <div className="mb-2">
+          <p className="font-semibold">
+            Buyers : <span className="font-normal">{totalBuyer}</span>
+          </p>{" "}
+          <p className="font-semibold">
+            Price :{" "}
+            <span className="font-normal">
+              {course.price / LAMPORTS_PER_SOL} SOL
+            </span>
+          </p>{" "}
+        </div>
+        <button onClick={() => handleBuyCourse()} className="buy-button">
+          Buy Course
+        </button>
+        <div className="rating-section">
+          <p className="font-semibold">Rating : {rating} / 5</p>
+          <p className="font-semibold">Rated by {rater} people</p>
+          <div className="user-rating">
+            <p>Rate this course:</p>
+            <div className="stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`star ${userRating >= star ? "filled" : ""}`}
+                  onClick={() => setUserRating(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            {userRating > 0 && (
+              <button onClick={() => handleRating(userRating)}>
+                Submit Rating
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="sections">
+          <h1 className="font-bold text-2xl mb-2">Course Sections</h1>
+          <div className="section">
+            <h3 onClick={() => toggleSection("0")}>
+              {course.sectionTitle[0]} ({course.sectionDuration[0]} minutes){" "}
+              {expandedSections.includes("0") ? "▲" : "▼"}
+            </h3>
+            {expandedSections.includes("0") && (
+              <div className="section-content">
+                <video
+                  src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[0]}`}
+                  controls
+                  className="w-full h-auto rounded-md my-6"
+                />
+                <p className="">{course.sectionDescription[0]}</p>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h3 onClick={() => toggleSection("1")}>
+              {course.sectionTitle[1]} ({course.sectionDuration[1]} minutes){" "}
+              {expandedSections.includes("1") ? "▲" : "▼"}
+            </h3>
+            {expandedSections.includes("1") && (
+              <div className="section-content">
+                <video
+                  src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[1]}`}
+                  controls
+                  className="w-full h-auto rounded-md my-6"
+                />
+                <p className="">{course.sectionDescription[1]}</p>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h3 onClick={() => toggleSection("2")}>
+              {course.sectionTitle[2]} ({course.sectionDuration[2]} minutes){" "}
+              {expandedSections.includes("2") ? "▲" : "▼"}
+            </h3>
+            {expandedSections.includes("2") && (
+              <div className="section-content">
+                <video
+                  src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[2]}`}
+                  controls
+                  className="w-full h-auto rounded-md my-6"
+                />
+                <p className="">{course.sectionDescription[2]}</p>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="questions-section">
+          <h1 className="font-bold text-2xl mb-2">Mini Quiz</h1>
+          <div className="question">
+            <h5 className="font-semibold">
+              <strong>[1]</strong> {course.questionList[0]}
+            </h5>
+            {course.firstAnswerOptions.map((option) => (
+              <label key={option} className="flex items-center mb-1">
+                <input
+                  type="radio"
+                  name="first_answerOptions"
+                  value={option}
+                  onChange={() => handleOptionChange("0", option)}
+                  className="mr-2"
+                />
+                {option}
+              </label>
             ))}
           </div>
-          {userRating > 0 && (
-            <button onClick={() => handleRating(userRating)}>
-              Submit Rating
-            </button>
-          )}
-        </div>
-      </div>
-      <div className="sections">
-        <h1 className="font-bold text-2xl mb-2">Course Sections</h1>
-        <div className="section">
-          <h3 onClick={() => toggleSection("0")}>
-            {course.sectionTitle[0]} ({course.sectionDuration[0]} minutes){" "}
-            {expandedSections.includes("0") ? "▲" : "▼"}
-          </h3>
-          {expandedSections.includes("0") && (
-            <div className="section-content">
-              <video
-                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[0]}`}
-                controls
-                className="w-full h-auto rounded-md my-6"
-              />
-              <p className="">{course.sectionDescription[0]}</p>
-            </div>
-          )}
-        </div>
-        <div className="section">
-          <h3 onClick={() => toggleSection("1")}>
-            {course.sectionTitle[1]} ({course.sectionDuration[1]} minutes){" "}
-            {expandedSections.includes("1") ? "▲" : "▼"}
-          </h3>
-          {expandedSections.includes("1") && (
-            <div className="section-content">
-              <video
-                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[1]}`}
-                controls
-                className="w-full h-auto rounded-md my-6"
-              />
-              <p className="">{course.sectionDescription[1]}</p>
-            </div>
-          )}
-        </div>
-        <div className="section">
-          <h3 onClick={() => toggleSection("2")}>
-            {course.sectionTitle[2]} ({course.sectionDuration[2]} minutes){" "}
-            {expandedSections.includes("2") ? "▲" : "▼"}
-          </h3>
-          {expandedSections.includes("2") && (
-            <div className="section-content">
-              <video
-                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[2]}`}
-                controls
-                className="w-full h-auto rounded-md my-6"
-              />
-              <p className="">{course.sectionDescription[2]}</p>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="questions-section">
-        <h1 className="font-bold text-2xl mb-2">Mini Quiz</h1>
-        <div className="question">
-          <h5 className="font-semibold">
-            <strong>[1]</strong> {course.questionList[0]}
-          </h5>
-          {course.firstAnswerOptions.map((option) => (
-            <label key={option} className="flex items-center mb-1">
-              <input
-                type="radio"
-                name="first_answerOptions"
-                value={option}
-                onChange={() => handleOptionChange("0", option)}
-                className="mr-2"
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-        <div className="question">
-          <h5 className="font-semibold">
-            <strong>[2]</strong> {course.questionList[1]}
-          </h5>
-          {course.secondAnswerOptions.map((option) => (
-            <label key={option} className="flex items-center mb-1">
-              <input
-                type="radio"
-                name="second_answerOptions"
-                value={option}
-                onChange={() => handleOptionChange("1", option)}
-                className="mr-2"
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-        <div className="question">
-          <h5 className="font-semibold">
-            <strong>[3]</strong> {course.questionList[2]}
-          </h5>
-          {course.thirdAnswerOptions.map((option) => (
-            <label key={option} className="flex items-center mb-1">
-              <input
-                type="radio"
-                name="third_answerOptions"
-                value={option}
-                onChange={() => handleOptionChange("2", option)}
-                className="mr-2"
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-        {!submitted ? (
+          <div className="question">
+            <h5 className="font-semibold">
+              <strong>[2]</strong> {course.questionList[1]}
+            </h5>
+            {course.secondAnswerOptions.map((option) => (
+              <label key={option} className="flex items-center mb-1">
+                <input
+                  type="radio"
+                  name="second_answerOptions"
+                  value={option}
+                  onChange={() => handleOptionChange("1", option)}
+                  className="mr-2"
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+          <div className="question">
+            <h5 className="font-semibold">
+              <strong>[3]</strong> {course.questionList[2]}
+            </h5>
+            {course.thirdAnswerOptions.map((option) => (
+              <label key={option} className="flex items-center mb-1">
+                <input
+                  type="radio"
+                  name="third_answerOptions"
+                  value={option}
+                  onChange={() => handleOptionChange("2", option)}
+                  className="mr-2"
+                />
+                {option}
+              </label>
+            ))}
+          </div>
           <button
             style={{ backgroundColor: "#1f6feb" }}
             onClick={handleSubmit}
@@ -383,15 +391,7 @@ const CourseDetailPage: React.FC = () => {
           >
             Submit
           </button>
-        ) : (
-          <div className="results">
-            <h3>Hasil Tes Anda:</h3>
-            <p>
-              Anda menjawab {score} dari {course.questions.length} soal dengan
-              benar.
-            </p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -2,13 +2,23 @@ import checked from "../../assets/checked.png";
 import { dummyAnswer } from "../../utils/list";
 import { IoMdCheckmark } from "react-icons/io";
 import { FcCancel } from "react-icons/fc";
+import React from "react";
 
-export const CompleteModal = () => {
-  const onClose = () => {};
+type CompleteModalProps = {
+  answerList: [string, string, string];
+  userAnswer: { [key: string]: string };
+  onClose: () => void;
+};
 
+export const CompleteModal: React.FC<CompleteModalProps> = ({
+  answerList,
+  userAnswer,
+  onClose,
+}) => {
   return (
     <div
-      className={`fixed font-poppins flex items-center justify-center w-screen h-screen inset-0 bg-black bg-opacity-50 duration-300`}
+      style={{ zIndex: "10000" }}
+      className={`fixed font-poppins flex items-center justify-center inset-0 bg-black bg-opacity-50 duration-300`}
     >
       <div className="bg-white shadow-xl shadow-black rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">
         <div className="flex justify-center items-center mt-5">
@@ -22,17 +32,20 @@ export const CompleteModal = () => {
           <h3 className="text-center font-normal text-md">
             Here are your results:
           </h3>
-          <div className="text-center ">
-            {dummyAnswer.map((answer, index) => (
+          <div className="text-center">
+            {answerList.map((answer, index) => (
               <div
                 key={index}
                 className="mt-2 flex flex-row items-center justify-center space-x-1"
               >
                 <p className="font-semibold">Question {index + 1} :</p>
-                <p>{answer.answer}</p>{" "}
+                <p>{answer}</p>{" "}
                 <p>
-                  <IoMdCheckmark color="green" />
-                  {/* <FcCancel /> */}
+                  {answer == userAnswer[index.toString()] ? (
+                    <IoMdCheckmark color="green" />
+                  ) : (
+                    <FcCancel />
+                  )}
                 </p>
               </div>
             ))}

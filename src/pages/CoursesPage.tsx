@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "../components/SearchBar";
 import CourseCard from "../components/CourseCard";
 import CategoryFilter from "../components/CategoryFilter";
-import { getBoughtCourse, getCourse } from "../services/course";
+import { getCourse } from "../services/course";
 import LoadingScreen from "../components/ui/loading-screen";
 
 interface Course {
