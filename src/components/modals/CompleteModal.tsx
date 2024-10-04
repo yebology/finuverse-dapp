@@ -1,5 +1,4 @@
 import checked from "../../assets/checked.png";
-import { dummyAnswer } from "../../utils/list";
 import { IoMdCheckmark } from "react-icons/io";
 import { FcCancel } from "react-icons/fc";
 import React from "react";
@@ -39,7 +38,7 @@ export const CompleteModal: React.FC<CompleteModalProps> = ({
                 className="mt-2 flex flex-row items-center justify-center space-x-1"
               >
                 <p className="font-semibold">Question {index + 1} :</p>
-                <p>{answer}</p>{" "}
+                <p>{userAnswer[index.toString()]}</p>{" "}
                 <p>
                   {answer == userAnswer[index.toString()] ? (
                     <IoMdCheckmark color="green" />

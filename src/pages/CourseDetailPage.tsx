@@ -60,6 +60,7 @@ const CourseDetailPage: React.FC = () => {
   const [loadingRating, setLoadingRating] = useState(true);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [loadingRate, setLoadingRate] = useState(false);
+  const [loadingComplete, setLoadingComplete] = useState(false);
   const [loadingOpenModal, setLoadingOpenModal] = useState(false);
   const [userRating, setUserRating] = useState<number>(0);
   const [totalBuyer, setTotalBuyer] = useState(0);
@@ -153,26 +154,25 @@ const CourseDetailPage: React.FC = () => {
         if (answer == answers[index.toString()]) {
           calculatedScore += 1;
         }
-        setLoadingOpenModal(true);
       });
+      setLoadingComplete(true);
       try {
+        await completeCourse(wallet, parseInt(id), calculatedScore)
       } catch (error) {
         console.log(error);
       } finally {
+        setLoadingComplete(false)
+        if (!loadingComplete) {
+          setLoadingOpenModal(true);
+        }
       }
       console.log(calculatedScore);
-      // await completeCourse(wallet, parseInt(id), calculatedScore);
-      // setScore(calculatedScore);
-      // setSubmitted(true);
-      // alert("Thankyou for your participation!");
     }
   };
 
   const handleRating = async (rating: number) => {
     if (id) {
-      setTimeout(() => {
-        setLoadingRate(true);
-      }, 10000);
+      setLoadingRate(true);
       try {
         await rateCourse(wallet, parseInt(id), rating);
         console.log("done");
@@ -194,9 +194,6 @@ const CourseDetailPage: React.FC = () => {
 
   const handleBuyCourse = async () => {
     if (id) {
-      setTimeout(() => {
-        setLoadingBuy(true);
-      }, 12000);
       try {
         await buyCourse(wallet, parseInt(id));
       } catch (error) {
@@ -216,10 +213,7 @@ const CourseDetailPage: React.FC = () => {
     loading ||
     !course ||
     loadingBuyer ||
-    loadingRating ||
-    loadingBuy ||
-    loadingRate
-  ) {
+    loadingRating) {
     return <LoadingScreen />;
   }
 
