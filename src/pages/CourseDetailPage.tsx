@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import LoadingScreen from "../components/ui/loading-screen";
-import { buyCourse, getCourse, getCourseBuyers, getCourseRating, rateCourse } from "../services/course";
+import {
+  buyCourse,
+  completeCourse,
+  getCourse,
+  getCourseBuyers,
+  getCourseRating,
+  rateCourse,
+} from "../services/course";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
@@ -29,6 +36,15 @@ interface CourseDetail {
   price: number;
   rating: number;
   ratingCount: number;
+  sectionTitle: [string, string, string];
+  sectionDuration: [number, number, number];
+  sectionVideo: [string, string, string];
+  sectionDescription: [string, string, string];
+  questionList: [string, string, string];
+  answerList: [string, string, string];
+  firstAnswerOptions: [string, string, string, string];
+  secondAnswerOptions: [string, string, string, string];
+  thirdAnswerOptions: [string, string, string, string];
   sections: Section[];
   questions: Question[];
 }
@@ -42,37 +58,37 @@ const CourseDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingBuyer, setLoadingBuyer] = useState(true);
   const [loadingRating, setLoadingRating] = useState(true);
-  const [loadingBuy, setLoadingBuy] = useState(false)
-  const [loadingRate, setLoadingRate] = useState(false)
+  const [loadingBuy, setLoadingBuy] = useState(false);
+  const [loadingRate, setLoadingRate] = useState(false);
   const [score, setScore] = useState<number>(0);
   const [userRating, setUserRating] = useState<number>(0);
   const [totalBuyer, setTotalBuyer] = useState(0);
   const [rating, setRating] = useState(0);
-  const [rater, setRater] = useState(0)
-  const wallet = useAnchorWallet()
+  const [rater, setRater] = useState(0);
+  const wallet = useAnchorWallet();
 
   useEffect(() => {
     const fetchTotalRating = async () => {
       if (course && id) {
         try {
-          const [accumulateData, totalData] = await getCourseRating(parseInt(id))
+          const [accumulateData, totalData] = await getCourseRating(
+            parseInt(id)
+          );
           if (accumulateData && totalData) {
-            setRating(accumulateData / totalData)
-            console.log(accumulateData)
-            console.log(totalData)
-            setRater(totalData)
+            setRating(accumulateData / totalData);
+            console.log(accumulateData);
+            console.log(totalData);
+            setRater(totalData);
           }
-        }
-        catch (error) {
-          console.log(error)
-        }
-        finally {
-          setLoadingRating(false)
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoadingRating(false);
         }
       }
-    }
-    fetchTotalRating()
-  }, [id, course])
+    };
+    fetchTotalRating();
+  }, [id, course]);
 
   useEffect(() => {
     const fetchTotalBuyer = async () => {
@@ -128,61 +144,68 @@ const CourseDetailPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    if (course) {
+  const handleSubmit = async() => {
+    if (course && id) {
+      console.log(answers)
+      console.log(course.answerList)
       let calculatedScore = 0;
-      course.questions.forEach((q) => {
-        if (q.correctAnswer && answers[q.id] === q.correctAnswer) {
+      course.answerList.forEach((answer, index) => {
+        if (answer == answers[index.toString()]) {
           calculatedScore += 1;
         }
-      });
-      setScore(calculatedScore);
-      setSubmitted(true);
-      alert("Thankyou for your participation!");
+      })
+      console.log(calculatedScore)
+      await completeCourse(wallet, parseInt(id), calculatedScore);
+      // setScore(calculatedScore);
+      // setSubmitted(true);
+      // alert("Thankyou for your participation!");
     }
   };
 
-  const handleRating = async(rating: number) => {
+  const handleRating = async (rating: number) => {
     if (id) {
       setTimeout(() => {
         setLoadingRate(true);
       }, 10000);
       try {
-        await rateCourse(wallet, parseInt(id), rating)
-        console.log("done")
-      }
-      catch (error) {
-        console.log(error)
-      }
-      finally {
-        setLoadingRate(false)
+        await rateCourse(wallet, parseInt(id), rating);
+        console.log("done");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingRate(false);
         if (!loadingRate) {
-          console.log(loadingRate)
+          console.log(loadingRate);
           window.location.reload();
         }
       }
     }
   };
 
-  const handleBuyCourse = async() => {
+  const handleBuyCourse = async () => {
     if (id) {
       setTimeout(() => {
         setLoadingBuy(true);
       }, 15000);
       try {
-        await buyCourse(wallet, parseInt(id))
+        await buyCourse(wallet, parseInt(id));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingBuy(false);
       }
-      catch (error) {
-        console.log(error)
-      }
-      finally {
-        setLoadingBuy(false)
-      }
-      console.log(loadingBuy)
+      console.log(loadingBuy);
     }
-  }
+  };
 
-  if (loading || !course || loadingBuyer || loadingRating || loadingBuy || loadingRate) {
+  if (
+    loading ||
+    !course ||
+    loadingBuyer ||
+    loadingRating ||
+    loadingBuy ||
+    loadingRate
+  ) {
     return <LoadingScreen />;
   }
 
@@ -196,8 +219,11 @@ const CourseDetailPage: React.FC = () => {
         alt={course.name}
         className="course-thumbnail"
       />
-      <div className="prose">
-        <p>{course.description}</p>
+      <div className="my-4">
+        <h5 className="font-semibold">Course Description : </h5>
+        <div className="prose">
+          <p>{course.description}</p>
+        </div>
       </div>
       <div className="mb-2">
         <p className="font-semibold">
@@ -210,9 +236,9 @@ const CourseDetailPage: React.FC = () => {
           </span>
         </p>{" "}
       </div>
-      <button
-      onClick={() => handleBuyCourse()}
-      className="buy-button">Buy Course</button>
+      <button onClick={() => handleBuyCourse()} className="buy-button">
+        Buy Course
+      </button>
       <div className="rating-section">
         <p className="font-semibold">Rating : {rating} / 5</p>
         <p className="font-semibold">Rated by {rater} people</p>
@@ -238,52 +264,112 @@ const CourseDetailPage: React.FC = () => {
       </div>
       <div className="sections">
         <h1 className="font-bold text-2xl mb-2">Course Sections</h1>
-        {/* {course.sections.map((section) => (
-          <div key={section.id} className="section">
-            <h3 onClick={() => toggleSection(section.id)}>
-              {section.title} ({section.duration}){" "}
-              {expandedSections.includes(section.id) ? "▲" : "▼"}
-            </h3>
-            {expandedSections.includes(section.id) && (
-              <div className="section-content">
-                <video
-                  src={section.videoUrl}
-                  controls
-                  className="w-full h-auto rounded-md"
-                />
-                <p>{section.description}</p>
-              </div>
-            )}
-          </div>
-        ))} */}
+        <div className="section">
+          <h3 onClick={() => toggleSection("0")}>
+            {course.sectionTitle[0]} ({course.sectionDuration[0]} minutes){" "}
+            {expandedSections.includes("0") ? "▲" : "▼"}
+          </h3>
+          {expandedSections.includes("0") && (
+            <div className="section-content">
+              <video
+                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[0]}`}
+                controls
+                className="w-full h-auto rounded-md my-6"
+              />
+              <p className="">{course.sectionDescription[0]}</p>
+            </div>
+          )}
+        </div>
+        <div className="section">
+          <h3 onClick={() => toggleSection("1")}>
+            {course.sectionTitle[1]} ({course.sectionDuration[1]} minutes){" "}
+            {expandedSections.includes("1") ? "▲" : "▼"}
+          </h3>
+          {expandedSections.includes("1") && (
+            <div className="section-content">
+              <video
+                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[1]}`}
+                controls
+                className="w-full h-auto rounded-md my-6"
+              />
+              <p className="">{course.sectionDescription[1]}</p>
+            </div>
+          )}
+        </div>
+        <div className="section">
+          <h3 onClick={() => toggleSection("2")}>
+            {course.sectionTitle[2]} ({course.sectionDuration[2]} minutes){" "}
+            {expandedSections.includes("2") ? "▲" : "▼"}
+          </h3>
+          {expandedSections.includes("2") && (
+            <div className="section-content">
+              <video
+                src={`https://gateway.pinata.cloud/ipfs/${course.sectionVideo[2]}`}
+                controls
+                className="w-full h-auto rounded-md my-6"
+              />
+              <p className="">{course.sectionDescription[2]}</p>
+            </div>
+          )}
+        </div>
       </div>
       <div className="questions-section">
         <h1 className="font-bold text-2xl mb-2">Mini Quiz</h1>
-        {/* {course.questions.map((q, index) => (
-          <div key={q.id} className="question">
-            <p>
-              <strong>[{index + 1}]</strong> {q.question}
-            </p>
-            {q.options.map((option) => (
-              <label key={option} className="flex items-center mb-1">
-                <input
-                  type="radio"
-                  name={q.id}
-                  value={option}
-                  checked={answers[q.id] === option}
-                  onChange={() => handleOptionChange(q.id, option)}
-                  className="mr-2"
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-        ))} */}
+        <div className="question">
+          <h5 className="font-semibold">
+            <strong>[1]</strong> {course.questionList[0]}
+          </h5>
+          {course.firstAnswerOptions.map((option) => (
+            <label key={option} className="flex items-center mb-1">
+              <input
+                type="radio"
+                name="first_answerOptions"
+                value={option}
+                onChange={() => handleOptionChange("0", option)}
+                className="mr-2"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+        <div className="question">
+          <h5 className="font-semibold">
+            <strong>[2]</strong> {course.questionList[1]}
+          </h5>
+          {course.secondAnswerOptions.map((option) => (
+            <label key={option} className="flex items-center mb-1">
+              <input
+                type="radio"
+                name="second_answerOptions"
+                value={option}
+                onChange={() => handleOptionChange("1", option)}
+                className="mr-2"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+        <div className="question">
+          <h5 className="font-semibold">
+            <strong>[3]</strong> {course.questionList[2]}
+          </h5>
+          {course.thirdAnswerOptions.map((option) => (
+            <label key={option} className="flex items-center mb-1">
+              <input
+                type="radio"
+                name="third_answerOptions"
+                value={option}
+                onChange={() => handleOptionChange("2", option)}
+                className="mr-2"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
         {!submitted ? (
           <button
             style={{ backgroundColor: "#1f6feb" }}
             onClick={handleSubmit}
-            // disabled={Object.keys(answers).length < course.questions.length}
             className="px-6 py-3 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300 disabled:bg-neutralDark disabled:cursor-not-allowed"
           >
             Submit
