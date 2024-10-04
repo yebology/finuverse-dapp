@@ -7,6 +7,7 @@ import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { programId, programInterface } from "../utils/constant";
 import { Buffer } from "buffer";
 
+// add category type number
 export async function createCourse(
   wallet: AnchorWallet | undefined,
   name: string,
@@ -179,6 +180,42 @@ export async function buyCourse(
   }
 }
 
+export async function getCourseBuyers(id : number) {
+  return await loadCourseBuyers(id);
+}
+
+async function loadCourseBuyers(id : number) {
+  try {
+    const provider = getProviderWithoutLogin();
+    if (!provider) {
+      console.log("Provider isn't available.");
+      return;
+    }
+    const program = new Program(programInterface, programId, provider);
+    const allCourseBuyers = await program.account.buy.all();
+    if (allCourseBuyers) {
+      const filteredBuyers = structuredCourseBuyers(allCourseBuyers, id);
+      return filteredBuyers;
+    }
+  }
+  catch (error) {
+    console.log(error)
+    return;
+  }
+}
+
+function structuredCourseBuyers(allCourseBuyers : any, id : number) {
+  const boughtList = allCourseBuyers.map((bought: any) => ({
+    courseId: bought.account.courseId.toNumber(),
+    buyer: bought.account.buyer.toString(),
+  }));
+  if (boughtList) {
+    const filteredBought = boughtList.filter((bought : any) => bought.courseId === id);
+    return filteredBought;
+  }
+  return;
+}
+
 export async function getBoughtCourse(wallet: AnchorWallet | undefined) {
   return await loadBoughtCourse(wallet);
 }
@@ -279,12 +316,11 @@ async function loadCourseRating(courseId: number) {
   try {
     const program = new Program(programInterface, programId, provider);
     const allRating = await program.account.rate.all();
-    console.log(allRating);
-    const convertedAllRating = structuredRating(allRating, courseId);
-    console.log(convertedAllRating);
+    const [accumulate, total] = structuredRating(allRating, courseId);
+    return [accumulate, total];
   } catch (error) {
     console.log(error);
-    return [];
+    return [null, null];
   }
 }
 
@@ -293,15 +329,20 @@ function structuredRating(data: any, courseId: number) {
     courseId: rate.account.courseId.toNumber(),
     rating: rate.account.rating.toNumber(),
   }));
-  const filteredRating = ratingList.filter(
-    (data: any) => data.courseId === courseId
-  );
-  const accumulateRating = filteredRating.reduce(
-    (acc: any, current: any) => acc + current.rating,
-    0
-  );
-  const currentRatingTotal = filteredRating.length;
-  return accumulateRating / currentRatingTotal;
+  if (ratingList) {
+    const filteredRating = ratingList.filter(
+      (data: any) => data.courseId === courseId
+    );
+    if (filteredRating) {
+      const accumulateRating = filteredRating.reduce(
+        (acc: any, current: any) => acc + current.rating,
+        0
+      );
+      const currentRatingTotal = filteredRating.length;
+      return [accumulateRating, currentRatingTotal];
+    }
+  }
+  return [null, null];
 }
 
 export async function completeCourse(

@@ -1,260 +1,273 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import LoadingScreen from "../components/ui/loading-screen";
+import { getCourse, getCourseBuyers, getCourseRating } from "../services/course";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 interface Section {
-    id: string;
-    title: string;
-    duration: string;
-    videoUrl: string;
-    description: string;
+  id: string;
+  title: string;
+  duration: string;
+  videoUrl: string;
+  description: string;
 }
 
 interface Question {
-    id: string;
-    question: string;
-    options: string[];
-    correctAnswer?: string; // Opsional: Jika Anda ingin menambahkan jawaban benar
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer?: string; // Opsional: Jika Anda ingin menambahkan jawaban benar
 }
 
 interface CourseDetail {
-    id: string;
-    thumbnail: string;
-    title: string;
-    buyers: number;
-    description: string;
-    price: number;
-    rating: number;
-    ratingCount: number;
-    sections: Section[];
-    questions: Question[];
+  id: string;
+  thumbnail: string;
+  name: string;
+  buyers: number;
+  description: string;
+  price: number;
+  rating: number;
+  ratingCount: number;
+  sections: Section[];
+  questions: Question[];
 }
 
 const CourseDetailPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const [course, setCourse] = useState<CourseDetail | null>(null);
-    const [expandedSections, setExpandedSections] = useState<string[]>([]);
-    const [answers, setAnswers] = useState<{ [key: string]: string }>({});
-    const [submitted, setSubmitted] = useState<boolean>(false);
-    const [score, setScore] = useState<number>(0);
-    const [userRating, setUserRating] = useState<number>(0);
+  const { id } = useParams<{ id: string }>();
+  const [course, setCourse] = useState<CourseDetail | null>(null);
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingBuyer, setLoadingBuyer] = useState(true);
+  const [loadingRating, setLoadingRating] = useState(true);
+  const [score, setScore] = useState<number>(0);
+  const [userRating, setUserRating] = useState<number>(0);
+  const [totalBuyer, setTotalBuyer] = useState(0);
+  const [rating, setRating] = useState(0);
 
-    useEffect(() => {
-        const fetchCourseDetail = async () => {
-            try {
-                // Fetch data dari API atau gunakan data dummy
-                const data: CourseDetail = {
-                    id: '1',
-                    thumbnail: 'https://via.placeholder.com/600x300',
-                    title: 'React for Beginners',
-                    buyers: 1500,
-                    description: 'Detailed description of the React course.',
-                    price: 49.99,
-                    rating: 4.5,
-                    ratingCount: 200,
-                    sections: [
-                        {
-                            id: 's1',
-                            title: 'Introduction',
-                            duration: '10:00',
-                            videoUrl: 'https://www.example.com/video1',
-                            description: 'Introduction to the course.',
-                        },
-                        {
-                            id: 's2',
-                            title: 'Getting Started',
-                            duration: '15:00',
-                            videoUrl: 'https://www.example.com/video2',
-                            description: 'Getting started with React.',
-                        },
-                        // Tambahkan lebih banyak section sesuai kebutuhan
-                    ],
-                    questions: [
-                        {
-                            id: 'q1',
-                            question: 'Apa yang dimaksud dengan JSX dalam React?',
-                            options: [
-                                'Sebuah library untuk manajemen state',
-                                'Sintaks JavaScript yang mirip XML',
-                                'Framework CSS untuk styling',
-                                'Alat untuk testing aplikasi',
-                            ],
-                            correctAnswer: 'Sintaks JavaScript yang mirip XML', // Opsional
-                        },
-                        {
-                            id: 'q2',
-                            question: 'Apa fungsi dari useState dalam React?',
-                            options: [
-                                'Mengelola side effects',
-                                'Mengatur routing aplikasi',
-                                'Menangani state lokal dalam komponen',
-                                'Membuat elemen virtual DOM',
-                            ],
-                            correctAnswer: 'Menangani state lokal dalam komponen', // Opsional
-                        },
-                        {
-                            id: 'q3',
-                            question: 'Bagaimana cara mengirim props ke komponen anak?',
-                            options: [
-                                'Menggunakan state',
-                                'Menggunakan context API',
-                                'Mengoper props melalui atribut JSX',
-                                'Tidak bisa mengirim props ke komponen anak',
-                            ],
-                            correctAnswer: 'Mengoper props melalui atribut JSX', // Opsional
-                        },
-                    ],
-                };
-                setCourse(data);
-            } catch (error) {
-                console.error('Error fetching course detail:', error);
-            }
-        };
-
-        fetchCourseDetail();
-    }, [id]);
-
-    const toggleSection = (sectionId: string) => {
-        setExpandedSections((prev) =>
-            prev.includes(sectionId)
-                ? prev.filter((id) => id !== sectionId)
-                : [...prev, sectionId]
-        );
-    };
-
-    const handleOptionChange = (questionId: string, option: string) => {
-        setAnswers((prev) => ({
-            ...prev,
-            [questionId]: option,
-        }));
-    };
-
-    const handleSubmit = () => {
-        if (course) {
-            let calculatedScore = 0;
-            course.questions.forEach((q) => {
-                if (q.correctAnswer && answers[q.id] === q.correctAnswer) {
-                    calculatedScore += 1;
-                }
-            });
-            setScore(calculatedScore);
-            setSubmitted(true);
-            alert('Terima kasih atas partisipasi Anda!');
+  useEffect(() => {
+    const fetchTotalRating = async () => {
+      if (course && id) {
+        try {
+          const [accumulateData, totalData] = await getCourseRating(parseInt(id))
+          if (accumulateData != null && totalData != null) {
+            // setRating(data)
+          }
         }
-    };
-
-    const handleRating = (rating: number) => {
-        if (!course) return;
-
-        // Menghitung rating rata-rata baru
-        const totalRating = course.rating * course.ratingCount;
-        const newRatingCount = course.ratingCount + 1;
-        const newRating = (totalRating + rating) / newRatingCount;
-
-        // Update state course dengan rating baru
-        setCourse({
-            ...course,
-            rating: parseFloat(newRating.toFixed(1)),
-            ratingCount: newRatingCount,
-        });
-
-        // Reset userRating setelah memberikan rating
-        setUserRating(0);
-
-        alert('Terima kasih atas rating Anda!');
-    };
-
-    if (!course) {
-        return <div>Loading...</div>;
+        catch (error) {
+          console.log(error)
+        }
+        finally {
+          setLoadingRating(false)
+        }
+      }
     }
+    fetchTotalRating()
+  }, [id, course])
 
-    return (
-        <div className="course-detail-page">
-            <h1>{course.title}</h1>
-            <img src={course.thumbnail} alt={course.title} className="course-thumbnail"/>
-            <div className="prose">
-                <p>{course.description}</p>
-            </div>
-            <p>Buyers: {course.buyers}</p>
-            <p>Price: ${course.price}</p>
-            <button className="buy-button">Buy Course</button>
-            <div className="rating-section">
-                <p>Rating: {course.rating} / 5</p>
-                <p>Rated by {course.ratingCount} people</p>
-                <div className="user-rating">
-                    <p>Rate this course:</p>
-                    <div className="stars">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                                key={star}
-                                className={`star ${userRating >= star ? 'filled' : ''}`}
-                                onClick={() => setUserRating(star)}
-                            >
-                                ★
-                            </span>
-                        ))}
-                    </div>
-                    {userRating > 0 && (
-                        <button onClick={() => handleRating(userRating)}>Submit Rating</button>
-                    )}
-                </div>
-            </div>
-            <div className="sections">
-                <h2>Course Sections</h2>
-                {course.sections.map((section) => (
-                    <div key={section.id} className="section">
-                        <h3 onClick={() => toggleSection(section.id)}>
-                            {section.title} ({section.duration}) {expandedSections.includes(section.id) ? '▲' : '▼'}
-                        </h3>
-                        {expandedSections.includes(section.id) && (
-                            <div className="section-content">
-                                <video src={section.videoUrl} controls className="w-full h-auto rounded-md"/>
-                                <p>{section.description}</p>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-            <div className="questions-section">
-                <h2>Test Pemahaman</h2>
-                {course.questions.map((q, index) => (
-                    <div key={q.id} className="question">
-                        <p>
-                            <strong>Soal {index + 1}:</strong> {q.question}
-                        </p>
-                        {q.options.map((option) => (
-                            <label key={option} className="flex items-center mb-1">
-                                <input
-                                    type="radio"
-                                    name={q.id}
-                                    value={option}
-                                    checked={answers[q.id] === option}
-                                    onChange={() => handleOptionChange(q.id, option)}
-                                    className="mr-2"
-                                />
-                                {option}
-                            </label>
-                        ))}
-                    </div>
-                ))}
-                {!submitted ? (
-                    <button
-                        onClick={handleSubmit}
-                        disabled={Object.keys(answers).length < course.questions.length}
-                        className="px-6 py-3 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300 disabled:bg-neutralDark disabled:cursor-not-allowed"
-                    >
-                        Submit Jawaban
-                    </button>
-                ) : (
-                    <div className="results">
-                        <h3>Hasil Tes Anda:</h3>
-                        <p>
-                            Anda menjawab {score} dari {course.questions.length} soal dengan benar.
-                        </p>
-                    </div>
-                )}
-            </div>
-        </div>
+  useEffect(() => {
+    const fetchTotalBuyer = async () => {
+      if (course && id) {
+        try {
+          const data = await getCourseBuyers(parseInt(id));
+          if (data) {
+            setTotalBuyer(data.length);
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoadingBuyer(false);
+        }
+      }
+    };
+    fetchTotalBuyer();
+  }, [id, course]);
+
+  useEffect(() => {
+    const fetchCourseDetail = async () => {
+      try {
+        const data = await getCourse();
+        if (data && id) {
+          const findCourse = data.find(
+            (course: any) => course.id === parseInt(id)
+          );
+          console.log(findCourse);
+          setCourse(findCourse);
+        }
+      } catch (error) {
+        console.error("Error fetching course detail:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseDetail();
+  }, [id]);
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections((prev) =>
+      prev.includes(sectionId)
+        ? prev.filter((id) => id !== sectionId)
+        : [...prev, sectionId]
     );
+  };
+
+  const handleOptionChange = (questionId: string, option: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: option,
+    }));
+  };
+
+  const handleSubmit = () => {
+    if (course) {
+      let calculatedScore = 0;
+      course.questions.forEach((q) => {
+        if (q.correctAnswer && answers[q.id] === q.correctAnswer) {
+          calculatedScore += 1;
+        }
+      });
+      setScore(calculatedScore);
+      setSubmitted(true);
+      alert("Thankyou for your participation!");
+    }
+  };
+
+  const handleRating = (rating: number) => {
+    if (!course) return;
+
+    const totalRating = course.rating * course.ratingCount;
+    const newRatingCount = course.ratingCount + 1;
+    const newRating = (totalRating + rating) / newRatingCount;
+
+    setCourse({
+      ...course,
+      rating: parseFloat(newRating.toFixed(1)),
+      ratingCount: newRatingCount,
+    });
+
+    setUserRating(0);
+
+    alert("Thankyou!");
+  };
+
+  if (loading || !course || loadingBuyer || loadingRating) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="course-detail-page font-poppins">
+      <h1 style={{ color: "#1f6feb" }} className="font-bold text-3xl mb-2">
+        {course.name}
+      </h1>
+      <img
+        src={`https://cdn.prod.website-files.com/5e318ddf83dd66608255c3b6/62b1de2e8e142538f54863b6_What%20is%20course%20design.jpg`}
+        alt={course.name}
+        className="course-thumbnail"
+      />
+      <div className="prose">
+        <p>{course.description}</p>
+      </div>
+      <div className="mb-2">
+        <p className="font-semibold">
+          Buyers : <span className="font-normal">{totalBuyer}</span>
+        </p>{" "}
+        <p className="font-semibold">
+          Price :{" "}
+          <span className="font-normal">
+            {course.price / LAMPORTS_PER_SOL} SOL
+          </span>
+        </p>{" "}
+      </div>
+      <button className="buy-button">Buy Course</button>
+      <div className="rating-section">
+        <p className="font-semibold">Rating : {rating} / 5</p>
+        <p className="font-semibold">Rated by {course.ratingCount} people</p>
+        <div className="user-rating">
+          <p>Rate this course:</p>
+          <div className="stars">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={`star ${userRating >= star ? "filled" : ""}`}
+                onClick={() => setUserRating(star)}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          {userRating > 0 && (
+            <button onClick={() => handleRating(userRating)}>
+              Submit Rating
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="sections">
+        <h1 className="font-bold text-2xl mb-2">Course Sections</h1>
+        {/* {course.sections.map((section) => (
+          <div key={section.id} className="section">
+            <h3 onClick={() => toggleSection(section.id)}>
+              {section.title} ({section.duration}){" "}
+              {expandedSections.includes(section.id) ? "▲" : "▼"}
+            </h3>
+            {expandedSections.includes(section.id) && (
+              <div className="section-content">
+                <video
+                  src={section.videoUrl}
+                  controls
+                  className="w-full h-auto rounded-md"
+                />
+                <p>{section.description}</p>
+              </div>
+            )}
+          </div>
+        ))} */}
+      </div>
+      <div className="questions-section">
+        <h1 className="font-bold text-2xl mb-2">Mini Quiz</h1>
+        {/* {course.questions.map((q, index) => (
+          <div key={q.id} className="question">
+            <p>
+              <strong>[{index + 1}]</strong> {q.question}
+            </p>
+            {q.options.map((option) => (
+              <label key={option} className="flex items-center mb-1">
+                <input
+                  type="radio"
+                  name={q.id}
+                  value={option}
+                  checked={answers[q.id] === option}
+                  onChange={() => handleOptionChange(q.id, option)}
+                  className="mr-2"
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        ))} */}
+        {!submitted ? (
+          <button
+            style={{ backgroundColor: "#1f6feb" }}
+            onClick={handleSubmit}
+            // disabled={Object.keys(answers).length < course.questions.length}
+            className="px-6 py-3 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300 disabled:bg-neutralDark disabled:cursor-not-allowed"
+          >
+            Submit
+          </button>
+        ) : (
+          <div className="results">
+            <h3>Hasil Tes Anda:</h3>
+            <p>
+              Anda menjawab {score} dari {course.questions.length} soal dengan
+              benar.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default CourseDetailPage;
