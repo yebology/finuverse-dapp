@@ -1,3 +1,178 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Styles */
+body {
+    @apply font-sans bg-neutralLight text-neutralDark;
+}
+
+button {
+    @apply font-medium;
+}
+
+
+/* Search Bar */
+.search-bar {
+    @apply w-full px-4 py-2 mb-0 text-base border border-neutralDark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+/* Course Card */
+.course-card {
+    @apply border border-neutralDark p-4 rounded-lg w-72 m-2 bg-white shadow-md hover:shadow-lg transition-shadow duration-300;
+}
+
+.course-thumbnail {
+    @apply w-full h-40 object-cover rounded-md mb-4;
+}
+
+.course-description {
+    @apply line-clamp-3 text-neutralDark;
+}
+
+.course-card h3 {
+    @apply text-lg font-semibold text-primary mb-2;
+}
+
+.course-card p {
+    @apply text-sm text-neutralDark;
+}
+
+.course-card button {
+    @apply mt-3 px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300;
+}
+
+/* Courses Page */
+.courses-page {
+    @apply p-5 bg-neutralLight min-h-screen;
+}
+
+.courses-list {
+    @apply flex flex-wrap gap-5 justify-center;
+}
+
+@media (max-width: 768px) {
+    .course-card {
+        @apply w-full;
+    }
+}
+
+/* Course Detail Page */
+.course-detail-page {
+    @apply p-5 bg-neutralLight min-h-screen max-w-4xl mx-auto;
+}
+
+.buy-button {
+    @apply px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300;
+}
+
+.buy-button:hover {
+    @apply bg-secondary;
+}
+
+.rating-section {
+    @apply mt-5;
+}
+
+.user-rating {
+    @apply mt-3;
+}
+
+.stars {
+    @apply flex gap-1 cursor-pointer;
+}
+
+.star {
+    @apply text-2xl text-neutralDark transition-colors duration-200;
+}
+
+.star.filled {
+    @apply text-accent;
+}
+
+.star:hover,
+.star.filled:hover {
+    @apply text-secondary;
+}
+
+.user-rating button {
+    @apply mt-2 px-4 py-2 bg-accent text-neutralDark rounded-md hover:bg-secondary transition-colors duration-300;
+}
+
+.user-rating button:hover {
+    @apply bg-secondary;
+}
+
+.sections {
+    @apply mt-8;
+}
+
+.section {
+    @apply border border-neutralDark p-3 mb-4 rounded-md bg-white shadow-sm;
+}
+
+.section h3 {
+    @apply flex justify-between items-center text-lg font-medium text-primary cursor-pointer;
+}
+
+.section-content {
+    @apply mt-2;
+}
+
+.questions-section {
+    @apply mt-8;
+}
+
+.question {
+    @apply mb-4;
+}
+
+.question p {
+    @apply mb-2 text-neutralDark;
+}
+
+.question label {
+    @apply block mb-1 text-sm text-neutralDark;
+}
+
+.questions-section button {
+    @apply px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary transition-colors duration-300;
+}
+
+.questions-section button:disabled {
+    @apply bg-neutralDark cursor-not-allowed;
+}
+
+
+/* Header */
+.header {
+    @apply bg-white shadow-md p-4 flex justify-between items-center;
+}
+
+.header .logo {
+    @apply text-2xl font-bold text-primary;
+}
+
+.header .nav-links {
+    @apply flex gap-4;
+}
+
+.header .nav-links a {
+    @apply text-neutralDark hover:text-primary transition-colors duration-300;
+}
+
+/* Footer */
+.footer {
+    @apply bg-neutralDark text-neutralLight p-4 mt-10 text-center;
+}
+
+.footer p {
+    @apply text-sm;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .courses-page {
+        @apply p-10;
+    }
+}
