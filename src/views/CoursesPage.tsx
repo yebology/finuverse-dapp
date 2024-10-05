@@ -44,11 +44,9 @@ const CoursesPage: React.FC = () => {
       const filteredCourses = courses.filter((course) => {
         const matchesSearch = course.name.toLowerCase()
           .includes(searchTerm.toLowerCase());
-        if (selectedCategory == 'Beginner') {
-          
-        }
+          const convertedCategory = course.category === 1 ? 'Beginner' : course.category === 2 ? 'Intermediate' : 'Advanced'
         const matchesCategory =
-          selectedCategory === "All" || course.category === selectedCategory;
+          selectedCategory === "All" || convertedCategory === selectedCategory;
         return matchesSearch && matchesCategory;
       });
       setFiltered(filteredCourses)
