@@ -9,7 +9,7 @@ interface Course {
   id: string;
   thumbnail: string;
   name: string;
-  category: "Beginner" | "Intermediate" | "Advanced";
+  category: number;
   buyers: number;
   creator: string;
   price: number;
@@ -44,6 +44,9 @@ const CoursesPage: React.FC = () => {
       const filteredCourses = courses.filter((course) => {
         const matchesSearch = course.name.toLowerCase()
           .includes(searchTerm.toLowerCase());
+        if (selectedCategory == 'Beginner') {
+          
+        }
         const matchesCategory =
           selectedCategory === "All" || course.category === selectedCategory;
         return matchesSearch && matchesCategory;

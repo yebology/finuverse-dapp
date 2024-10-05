@@ -7,7 +7,7 @@ interface CourseCardProps {
   id: string;
   thumbnail: string;
   name: string;
-  category: "Beginner" | "Intermediate" | "Advanced";
+  category: number;
   buyers: number;
   creator: string;
   price: number;
@@ -30,21 +30,21 @@ const CourseCard: React.FC<CourseCardProps> = ({
     <div className="course-card">
       <div className="relative">
         <img
-          src={`https://cdn.prod.website-files.com/5e318ddf83dd66608255c3b6/62b1de2e8e142538f54863b6_What%20is%20course%20design.jpg`}
-          alt={name}
+        src={`https://gateway.pinata.cloud/ipfs/${thumbnail}`}
+alt={name}
           className="course-thumbnail"
         />
         <div className="absolute p-2 top-0 left-0">
           <div
             className={`${
-              category === "Beginner"
+              category == 1
                 ? "bg-yellow-300"
-                : category === "Intermediate"
+                : category === 2
                 ? "bg-blue-300"
                 : "bg-red-500"
             } uppercase font-semibold p-1 rounded-md`}
           >
-            <h5 className="text-sm text-white">{category}</h5>
+            <h5 className="text-sm text-white">{category == 1 ? 'Beginner' : category == 2 ? 'Intermediate' : 'Advanced'}</h5>
           </div>
         </div>
       </div>

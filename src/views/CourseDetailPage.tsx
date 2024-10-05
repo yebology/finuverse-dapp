@@ -157,11 +157,11 @@ const CourseDetailPage: React.FC = () => {
       });
       setLoadingComplete(true);
       try {
-        await completeCourse(wallet, parseInt(id), calculatedScore)
+        await completeCourse(wallet, parseInt(id), calculatedScore);
       } catch (error) {
         console.log(error);
       } finally {
-        setLoadingComplete(false)
+        setLoadingComplete(false);
         if (!loadingComplete) {
           setLoadingOpenModal(true);
         }
@@ -209,25 +209,25 @@ const CourseDetailPage: React.FC = () => {
     }
   };
 
-  if (
-    loading ||
-    !course ||
-    loadingBuyer ||
-    loadingRating) {
+  if (loading || !course || loadingBuyer || loadingRating) {
     return <LoadingScreen />;
   }
 
   return (
     <div className="relative course-detail-page font-poppins">
       {loadingOpenModal && (
-        <CompleteModal userAnswer={answers} answerList={course.answerList} onClose={onClose}/>
+        <CompleteModal
+          userAnswer={answers}
+          answerList={course.answerList}
+          onClose={onClose}
+        />
       )}
       <div className={`${loadingOpenModal ? "blur-sm" : ""}`}>
         <h1 style={{ color: "#1f6feb" }} className="font-bold text-4xl my-8">
           {course.name}
         </h1>
         <img
-          src={`https://cdn.prod.website-files.com/5e318ddf83dd66608255c3b6/62b1de2e8e142538f54863b6_What%20is%20course%20design.jpg`}
+          src={`https://gateway.pinata.cloud/ipfs/${course.thumbnail}`}
           alt={course.name}
           className="course-thumbnail"
         />

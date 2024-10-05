@@ -7,7 +7,6 @@ import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { programId, programInterface } from "../utils/constant";
 import { Buffer } from "buffer";
 
-// add category type number
 export async function createCourse(
   wallet: AnchorWallet | undefined,
   name: string,
@@ -119,6 +118,7 @@ function structuredCourse(allCourse: any) {
     name: course.account.name.toString(),
     creator: course.account.creator.toString(),
     description: course.account.description.toString(),
+    category: course.account.category.toNumber(),
     price: course.account.price.toNumber(),
     buyer: course.account.buyer.toNumber(),
     thumbnail: course.account.thumbnail.toString(),

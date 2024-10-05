@@ -37,33 +37,29 @@ export function CourseForm() {
   }
 
   const [course, setCourse] = useState<Course>({
-    name: 'Introduction to Web Development',
-    description: 'A comprehensive course designed to teach you the basics.',
+    name: 'Introduction to Digital Finance',
+    description: 'Discover the fundamentals of Digital Finance.',
     category: 1,
-    price: 5,
+    price: 1,
     thumbnail: null,
-    section_title: ['Getting Started', 'HTML & CSS Basics', 'JavaScript Fundamentals'],
+    section_title: ['What is Digital Finance ?', 'Digital Finance Inclusion', 'The Key into Financial Integrity'],
     section_description: [
-      'Introduction to the tools and setup required.',
-      'Learn the foundational structure and styling.',
-      'Understand JavaScript fundamentals.'
+      'Understand the core concepts of Digital Finance.',
+      'Learn how Digital Finance fosters financial inclusion.',
+      'Explore essential strategies that promote trust in financial systems.'
     ],
-    section_duration: [30, 45, 60],
+    section_duration: [1, 1, 3],
     section_video: [null, null, null],
-    question_list: ['What is HTML?', 'How do you style a webpage?', 'What is a function in JavaScript?'],
-    answer_list: ['HTML is a markup language.', 'You style a webpage using CSS.', 'A function is a block of code designed.'],
-    first_answer_options: ['HTML', 'CSS', 'JavaScript', 'Python'],
-    second_answer_options: ['CSS', 'Bootstrap', 'JavaScript', 'PHP'],
-    third_answer_options: ['Function', 'Variable', 'Array', 'Object'],
+    question_list: ['What tech does Digital Finance use?', 'Digital Finance makes services __', 'What ensures financial integrity'],
+    answer_list: ['Digital', 'Accessible', 'Trust'],
+    first_answer_options: ['Digital', 'Analog', 'Paper', 'Manual'],
+    second_answer_options: ['Exclusive', 'Accessible', 'Expensive', 'Complicated'],
+    third_answer_options: ['Secrecy', 'Trust', 'Opacity', 'Confusion'],
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("Updated course:", course);
-  }, [course]);
 
   const updateCourse = (updatedCourse: Partial<Course>) => {
     setCourse((prevCourse) => ({
@@ -199,7 +195,11 @@ export function CourseForm() {
       handleUploadVideo3ToPinata(),
     ])
       .then(([thumbnail_cid, video_1, video_2, video_3]) => {
-
+        console.log(course)
+        console.log(thumbnail_cid)
+        console.log(video_1)
+        console.log(video_2)
+        console.log(video_3);
         if (thumbnail_cid && video_1 && video_2 && video_3) {
           const sectionVideoCID: string[] = [video_1, video_2, video_3];
 
@@ -227,14 +227,14 @@ export function CourseForm() {
       .then(() => {
         setIsLoading(false);
         successAlert();
-        reset();
+        // reset();
         getCourse();
         console.log("Form submitted");
       })
       .catch((error) => {
         setIsLoading(false);
         failedAlert();
-        reset();
+        // reset();
         console.error("Error during submission:", error);
       });
   };
@@ -278,7 +278,7 @@ export function CourseForm() {
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
               id="course_name"
-              placeholder="Ex: Advanced Blockchain Programming with Solidity"
+              placeholder="Ex: Introduction to Decentralized Finance (DeFi)"
               type="text"
               value={course.name}
               onChange={(e) =>
@@ -301,7 +301,7 @@ export function CourseForm() {
               rows={5}
               cols={30}
               id="description"
-              placeholder="Ex: Dive into blockchain development and learn how to create secure and scalable applications"
+              placeholder="Ex: Learn the basics and impact of Decentralized Finance (DeFi) on traditional finance using blockchain technology."
               value={course.description}
               onChange={(e) =>
                 updateCourse({
@@ -333,7 +333,7 @@ export function CourseForm() {
               min="1"
               step="1"
               id="price"
-              placeholder="Ex: 20 SOL"
+              placeholder="Ex: 2 SOL"
               type="number"
               value={course.price}
               onChange={(e) =>
