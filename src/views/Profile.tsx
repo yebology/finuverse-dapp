@@ -4,8 +4,6 @@ import ProfileSection from "../components/ui/profilesection";
 import CourseBuy from "../components/ui/recorded-amount-course-buy";
 import CourseUploaded from "../components/ui/recorded-amount-course-uploaded";
 import CourseFinnished from "../components/ui/recorded-amount-course-finnished";
-import CourseList from "../components/ui/profile-my-course";
-import CourseBought from "../components/ui/profile-course-buy";
 
 import profilepicture from "../assets/WhatsApp Image 2024-09-26 at 13.33.09_560b102b.jpg";
 import { AnchorWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
@@ -162,8 +160,8 @@ export const Profile = () => {
             >
               Course Uploaded :{" "}
             </h1>
-            <div className="grid grid-cols-4">
-              {uploadedCourse.map((course: any) => (
+            <div className="grid grid-cols-4 gap-3">
+            {uploadedCourse.map((course: any) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>
@@ -177,8 +175,8 @@ export const Profile = () => {
             >
               Course Boughted :{" "}
             </h1>
-            <div className="grid grid-cols-4">
-              {boughtCourse.map((course: any) => (
+            <div className="grid grid-cols-4 gap-3">
+            {boughtCourse.map((course: any) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>

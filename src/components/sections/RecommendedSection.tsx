@@ -21,7 +21,7 @@ export const RecommendedSection : React.FC<RecommendedSectionProps> = ({ course 
         </span>
         Picks for You{" "}
       </h1>
-      <div className="courses-list flex flex-wrap gap-3 justify-center">
+      <div className="grid grid-cols-4 gap-3">
         {course.map((data) => (
           <CourseCard key={data.id} {...data} />
         ))}

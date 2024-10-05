@@ -73,7 +73,7 @@ const CoursesPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="courses-list flex flex-wrap gap-3 justify-center">
+      <div className="grid grid-cols-4 gap-3">
         {filtered.map((course) => (
           <CourseCard key={course.id} {...course} />
         ))}

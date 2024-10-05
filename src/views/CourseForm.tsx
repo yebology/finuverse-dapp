@@ -37,24 +37,24 @@ export function CourseForm() {
   }
 
   const [course, setCourse] = useState<Course>({
-    name: 'Introduction to Digital Finance',
-    description: 'Discover the fundamentals of Digital Finance.',
-    category: 1,
+    name: 'Cryptocurrency Investment',
+    description: 'Discover strategies for managing a cryptocurrency portfolio in a volatile market.',
+    category: 2,
     price: 1,
     thumbnail: null,
-    section_title: ['What is Digital Finance ?', 'Digital Finance Inclusion', 'The Key into Financial Integrity'],
+    section_title: ['Crypto Markets', 'Diverse Portfolio', 'Investment Strategies'],
     section_description: [
-      'Understand the core concepts of Digital Finance.',
-      'Learn how Digital Finance fosters financial inclusion.',
-      'Explore essential strategies that promote trust in financial systems.'
+      'Explore cryptocurrency market dynamics.',
+      'Learn diversification strategies for crypto.',
+      'Review investment strategies for optimization.'
     ],
-    section_duration: [1, 1, 3],
+    section_duration: [3, 3, 8],
     section_video: [null, null, null],
-    question_list: ['What tech does Digital Finance use?', 'Digital Finance makes services __', 'What ensures financial integrity'],
-    answer_list: ['Digital', 'Accessible', 'Trust'],
-    first_answer_options: ['Digital', 'Analog', 'Paper', 'Manual'],
-    second_answer_options: ['Exclusive', 'Accessible', 'Expensive', 'Complicated'],
-    third_answer_options: ['Secrecy', 'Trust', 'Opacity', 'Confusion'],
+    question_list: ['What drives volatility?', 'What is diversification benefit?', 'Which strategy buys regularly?'],
+    answer_list: ['Public Sentiment', 'Reduced Risk', 'Dolar-Cost'],
+    first_answer_options: ['Market Cap', 'Regulations', 'Public Sentiment', 'Supply Issues'],
+    second_answer_options: ['Higher Fees', 'Increased Risk', 'Reduced Risk', 'Guaranted Profits'],
+    third_answer_options: ['Swing', 'HODLing', 'Dolar-Cost', 'Day'],
   });
 
   const [isLoading, setIsLoading] = useState(false);
