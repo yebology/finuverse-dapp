@@ -11,18 +11,17 @@ import LoadingScreen from "../components/ui/loading-screen";
 import SectionAccordion from "../components/ui/accordion-section";
 import QuestionAccordion from "../components/ui/accordion-question";
 import LabelInputContainer from "../components/ui/label-input-container";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import { PinataSDK } from "pinata-web3";
 import { createCourse } from "../services/course";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { getCourse } from "../services/course";
 
 export function CourseForm() {
-
   interface Course {
     name: string;
     description: string;
-    category: number,
+    category: number;
     price: number;
     thumbnail: File | null;
     section_title: [string, string, string];
@@ -37,24 +36,42 @@ export function CourseForm() {
   }
 
   const [course, setCourse] = useState<Course>({
-    name: 'Cryptocurrency Investment',
-    description: 'Discover strategies for managing a cryptocurrency portfolio in a volatile market.',
-    category: 2,
+    name: "Cryptocurrency Basics",
+    description: "Learn the foundational concepts of cryptocurrency",
+    category: 1,
     price: 1,
     thumbnail: null,
-    section_title: ['Crypto Markets', 'Diverse Portfolio', 'Investment Strategies'],
-    section_description: [
-      'Explore cryptocurrency market dynamics.',
-      'Learn diversification strategies for crypto.',
-      'Review investment strategies for optimization.'
+    section_title: [
+      "What is Cryptocurency?",
+      "How It Works?",
+      "What is Tokenomics?",
     ],
-    section_duration: [3, 3, 8],
+    section_description: [
+      "Define cryptocurrency basics.",
+      "Explore how it works.",
+      "Understand tokenomics.",
+    ],
+    section_duration: [6, 14, 3],
     section_video: [null, null, null],
-    question_list: ['What drives volatility?', 'What is diversification benefit?', 'Which strategy buys regularly?'],
-    answer_list: ['Public Sentiment', 'Reduced Risk', 'Dolar-Cost'],
-    first_answer_options: ['Market Cap', 'Regulations', 'Public Sentiment', 'Supply Issues'],
-    second_answer_options: ['Higher Fees', 'Increased Risk', 'Reduced Risk', 'Guaranted Profits'],
-    third_answer_options: ['Swing', 'HODLing', 'Dolar-Cost', 'Day'],
+    question_list: [
+      "What best describes cryptocurrency?",
+      "What technology underpins cryptocurrencies?",
+      "What does tokenomics study?",
+    ],
+    answer_list: ["Digital currency", "Blockchain", "Supply and demand"],
+    first_answer_options: [
+      "Physical currency",
+      "Digital currency",
+      "Barter",
+      "Government money",
+    ],
+    second_answer_options: ["Cloud", "Blockchain", "AI", "Database"],
+    third_answer_options: [
+      "Regulations",
+      "Supply and demand",
+      "Exchanges",
+      "Mining",
+    ],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +97,7 @@ export function CourseForm() {
         return upload.IpfsHash;
       } else {
         console.log("Thumbnail not provided");
-        return ""
+        return "";
       }
     } catch (error) {
       console.log(error);
@@ -142,15 +159,15 @@ export function CourseForm() {
   const successAlert = () => {
     Swal.fire({
       text: "You've successfully created a new course!",
-      icon: 'success',
-      confirmButtonText: 'Done',
-      confirmButtonColor: '#1f6feb',
+      icon: "success",
+      confirmButtonText: "Done",
+      confirmButtonColor: "#1f6feb",
       customClass: {
-        confirmButton: 'w-full'
-      }
+        confirmButton: "w-full",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        navigate('/course');
+        navigate("/course");
       }
     });
   };
@@ -158,28 +175,28 @@ export function CourseForm() {
   const failedAlert = () => {
     Swal.fire({
       text: "Oops... There's something wrong while creating the course. Please try again!",
-      icon: 'error',
-      confirmButtonText: 'Done',
-      confirmButtonColor: '#cc0029'
+      icon: "error",
+      confirmButtonText: "Done",
+      confirmButtonColor: "#cc0029",
     });
   };
 
   const reset = () => {
     setCourse({
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       category: 1,
       price: 0,
       thumbnail: null,
-      section_title: ['', '', ''],
-      section_description: ['', '', ''],
+      section_title: ["", "", ""],
+      section_description: ["", "", ""],
       section_duration: [0, 0, 0],
       section_video: [null, null, null],
-      question_list: ['', '', ''],
-      answer_list: ['', '', ''],
-      first_answer_options: ['', '', '', ''],
-      second_answer_options: ['', '', '', ''],
-      third_answer_options: ['', '', '', ''],
+      question_list: ["", "", ""],
+      answer_list: ["", "", ""],
+      first_answer_options: ["", "", "", ""],
+      second_answer_options: ["", "", "", ""],
+      third_answer_options: ["", "", "", ""],
     });
   };
 
@@ -195,10 +212,10 @@ export function CourseForm() {
       handleUploadVideo3ToPinata(),
     ])
       .then(([thumbnail_cid, video_1, video_2, video_3]) => {
-        console.log(course)
-        console.log(thumbnail_cid)
-        console.log(video_1)
-        console.log(video_2)
+        console.log(course);
+        console.log(thumbnail_cid);
+        console.log(video_1);
+        console.log(video_2);
         console.log(video_3);
         if (thumbnail_cid && video_1 && video_2 && video_3) {
           const sectionVideoCID: string[] = [video_1, video_2, video_3];
@@ -239,18 +256,22 @@ export function CourseForm() {
       });
   };
 
-  const [openSectionAccordion, setOpenSectionAccordion] = useState<number | null>(null);
+  const [openSectionAccordion, setOpenSectionAccordion] = useState<
+    number | null
+  >(null);
   const toggleSectionAccordion = (index: number) => {
     setOpenSectionAccordion(openSectionAccordion === index ? null : index);
   };
 
-  const [openQuestionAccordion, setOpenQuestionAccordion] = useState<number | null>(null);
+  const [openQuestionAccordion, setOpenQuestionAccordion] = useState<
+    number | null
+  >(null);
   const toggleQuestionAccordion = (index: number) => {
     setOpenQuestionAccordion(openQuestionAccordion === index ? null : index);
   };
 
   if (isLoading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return (
@@ -259,12 +280,14 @@ export function CourseForm() {
         data-aos="fade-up"
         data-aos-anchor-placement="top-bottom"
         data-aos-duration="500"
-        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input">
+        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input"
+      >
         <h2 className="font-bold text-xl text-neutral-800">
           Create Your Course
         </h2>
         <p className="text-neutral-600 text-base w-full mt-2 mb-8">
-          Fill in the course details accurately to help learners understand its value. Complete all required fields before submitting.
+          Fill in the course details accurately to help learners understand its
+          value. Complete all required fields before submitting.
         </p>
         <div className="w-full flex flex-col space-y-4">
           <LabelInputContainer>
@@ -272,7 +295,10 @@ export function CourseForm() {
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              htmlFor="course_name">Course Name</Label>
+              htmlFor="course_name"
+            >
+              Course Name
+            </Label>
             <Input
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
@@ -283,7 +309,7 @@ export function CourseForm() {
               value={course.name}
               onChange={(e) =>
                 updateCourse({
-                  name: e.target.value
+                  name: e.target.value,
                 })
               }
             />
@@ -293,7 +319,10 @@ export function CourseForm() {
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              htmlFor="description">Description</Label>
+              htmlFor="description"
+            >
+              Description
+            </Label>
             <TextArea
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
@@ -305,7 +334,7 @@ export function CourseForm() {
               value={course.description}
               onChange={(e) =>
                 updateCourse({
-                  description: e.target.value
+                  description: e.target.value,
                 })
               }
             />
@@ -315,17 +344,21 @@ export function CourseForm() {
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              htmlFor="description">Category</Label>
-            <SelectMenus
-              updateCourse={updateCourse}
-            />
+              htmlFor="description"
+            >
+              Category
+            </Label>
+            <SelectMenus updateCourse={updateCourse} />
           </LabelInputContainer>
           <LabelInputContainer>
             <Label
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              htmlFor="price">Price</Label>
+              htmlFor="price"
+            >
+              Price
+            </Label>
             <Input
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
@@ -338,7 +371,7 @@ export function CourseForm() {
               value={course.price}
               onChange={(e) =>
                 updateCourse({
-                  price: parseInt(e.target.value)
+                  price: parseInt(e.target.value),
                 })
               }
             />
@@ -348,12 +381,17 @@ export function CourseForm() {
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              htmlFor="thumbnail">Thumbnail</Label>
+              htmlFor="thumbnail"
+            >
+              Thumbnail
+            </Label>
             <FileUpload
               data-aos="fade-up"
               data-aos-anchor-placement="top-bottom"
               data-aos-duration="500"
-              updateCourse={handleFileUpload} fileType={"Thumbnail"} />
+              updateCourse={handleFileUpload}
+              fileType={"Thumbnail"}
+            />
           </LabelInputContainer>
           <button
             onClick={() => handleSubmit()}
@@ -372,25 +410,34 @@ export function CourseForm() {
         data-aos="fade-up"
         data-aos-anchor-placement="top-bottom"
         data-aos-duration="500"
-        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input flex flex-col space-y-12">
+        className="bg-white w-full lg:w-1/2 p-8 rounded-md shadow-input flex flex-col space-y-12"
+      >
         <div
           data-aos="fade-up"
           data-aos-anchor-placement="top-bottom"
           data-aos-duration="500"
-          id="section-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
+          id="section-accordion-flush"
+          data-accordion="collapse"
+          data-active-classes="bg-white text-gray-900"
+          data-inactive-classes="text-gray-500"
+        >
           <h2
             data-aos="fade-up"
             data-aos-anchor-placement="top-bottom"
             data-aos-duration="500"
-            className="font-bold text-xl text-neutral-800">
+            className="font-bold text-xl text-neutral-800"
+          >
             Course Sections Overview
           </h2>
           <p
             data-aos="fade-up"
             data-aos-anchor-placement="top-bottom"
             data-aos-duration="500"
-            className="text-neutral-600 text-base w-full mt-2 mb-4">
-            In this section, outline the topics included in your course. This will help students understand the course structure and what to expect.
+            className="text-neutral-600 text-base w-full mt-2 mb-4"
+          >
+            In this section, outline the topics included in your course. This
+            will help students understand the course structure and what to
+            expect.
           </p>
           <SectionAccordion
             toggleSectionAccordion={() => toggleSectionAccordion(1)}
@@ -402,10 +449,14 @@ export function CourseForm() {
             placeholderTitle={"What Will You Teach?"}
             htmlForDescription={"section1_description"}
             htmlIdDescription={"section1_description"}
-            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            placeholderDescription={
+              "Provide a brief description of this section, highlighting key concepts and objectives that will be covered."
+            }
             htmlForDuration={"section1_duration"}
             htmlIdDuration={"section1_duration"}
-            placeholderDuration={"How long is the duration of this course? (in minutes)"}
+            placeholderDuration={
+              "How long is the duration of this course? (in minutes)"
+            }
             course={course}
             updateCourse={updateCourse}
           />
@@ -419,10 +470,14 @@ export function CourseForm() {
             placeholderTitle={"What Will You Teach?"}
             htmlForDescription={"section2_description"}
             htmlIdDescription={"section2_description"}
-            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            placeholderDescription={
+              "Provide a brief description of this section, highlighting key concepts and objectives that will be covered."
+            }
             htmlForDuration={"section2_duration"}
             htmlIdDuration={"section2_duration"}
-            placeholderDuration={"How long is the duration of this course? (in minutes)"}
+            placeholderDuration={
+              "How long is the duration of this course? (in minutes)"
+            }
             course={course}
             updateCourse={updateCourse}
           />
@@ -436,10 +491,14 @@ export function CourseForm() {
             placeholderTitle={"What Will You Teach?"}
             htmlForDescription={"section3_description"}
             htmlIdDescription={"section3_description"}
-            placeholderDescription={"Provide a brief description of this section, highlighting key concepts and objectives that will be covered."}
+            placeholderDescription={
+              "Provide a brief description of this section, highlighting key concepts and objectives that will be covered."
+            }
             htmlForDuration={"section3_duration"}
             htmlIdDuration={"section3_duration"}
-            placeholderDuration={"How long is the duration of this course? (in minutes)"}
+            placeholderDuration={
+              "How long is the duration of this course? (in minutes)"
+            }
             course={course}
             updateCourse={updateCourse}
           />
@@ -448,20 +507,28 @@ export function CourseForm() {
           data-aos="fade-up"
           data-aos-anchor-placement="top-bottom"
           data-aos-duration="500"
-          id="question-accordion-flush" data-accordion="collapse" data-active-classes="bg-white text-gray-900" data-inactive-classes="text-gray-500">
+          id="question-accordion-flush"
+          data-accordion="collapse"
+          data-active-classes="bg-white text-gray-900"
+          data-inactive-classes="text-gray-500"
+        >
           <h2
             data-aos="fade-up"
             data-aos-anchor-placement="top-bottom"
             data-aos-duration="500"
-            className="font-bold text-xl text-neutral-800">
+            className="font-bold text-xl text-neutral-800"
+          >
             Quiz Questions Section
           </h2>
           <p
             data-aos="fade-up"
             data-aos-anchor-placement="top-bottom"
             data-aos-duration="500"
-            className="text-neutral-600 text-base w-full mt-2 mb-4">
-            In this section, you can add quiz questions to assess your students' understanding. This will enhance the learning experience and help track progress.
+            className="text-neutral-600 text-base w-full mt-2 mb-4"
+          >
+            In this section, you can add quiz questions to assess your students'
+            understanding. This will enhance the learning experience and help
+            track progress.
           </p>
           <QuestionAccordion
             toggleQuestionAccordion={() => toggleQuestionAccordion(1)}
