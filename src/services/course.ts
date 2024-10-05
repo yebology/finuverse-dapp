@@ -12,6 +12,7 @@ export async function createCourse(
   wallet: AnchorWallet | undefined,
   name: string,
   description: string,
+  category: number,
   price: number,
   thumbnail_cid: string,
   section_title: [string, string, string],
@@ -31,6 +32,7 @@ export async function createCourse(
   }
   const idConverted = new BN(Math.floor(new Date().getTime() / 1000));
   const price_converted = new BN(price * LAMPORTS_PER_SOL);
+  const category_converted = new BN(category);
   const section_duration_converted = section_duration.map(
     (duration: number) => {
       return new BN(duration);
@@ -50,6 +52,7 @@ export async function createCourse(
       idConverted,
       name,
       description,
+      category_converted,
       price_converted,
       thumbnail_cid,
       section_title,

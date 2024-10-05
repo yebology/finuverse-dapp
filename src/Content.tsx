@@ -5,8 +5,8 @@ import { Footer } from "./components/fixed/Footer";
 import { CourseForm } from "./views/CourseForm";
 import { Fetch } from "./views/Fetch";
 import { Profile } from "./views/Profile";
-import CoursesPage from "./pages/CoursesPage";
-import CourseDetailPage from "./pages/CourseDetailPage";
+import CoursesPage from "./views/CoursesPage";
+import CourseDetailPage from "./views/CourseDetailPage";
 // import { CompleteModal } from "./components/modals/CompleteModal";
 
 export const Content = () => {

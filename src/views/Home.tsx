@@ -6,33 +6,34 @@ import LoadingScreen from "../components/ui/loading-screen";
 
 export const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [recommendedCouse, setRecommendedCouse] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getCourse()
+        const data = await getCourse();
         if (data) {
-          // const filtered = data.filter((course) => course.)
+          const shuffled = data.sort(() => 0.5 - Math.random());
+          const filtered = shuffled.slice(0, 8);
+          setRecommendedCouse(filtered)
         }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
-      catch (error) {
-        console.log(error)
-      }
-      finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, []);
 
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return (
     <div>
       <HeroSection />
-      <RecommendedSection message={"Released"}/>
+      <RecommendedSection course={recommendedCouse}/>
     </div>
   );
 };

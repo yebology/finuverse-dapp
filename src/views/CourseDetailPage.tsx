@@ -25,7 +25,7 @@ interface Question {
   id: string;
   question: string;
   options: string[];
-  correctAnswer?: string; // Opsional: Jika Anda ingin menambahkan jawaban benar
+  correctAnswer?: string;
 }
 
 interface CourseDetail {

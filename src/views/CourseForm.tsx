@@ -228,7 +228,7 @@ export function CourseForm() {
         setIsLoading(false);
         successAlert();
         reset();
-        getCourse(wallet);
+        getCourse();
         console.log("Form submitted");
       })
       .catch((error) => {
