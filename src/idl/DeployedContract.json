@@ -71,6 +71,10 @@
           "type": "string"
         },
         {
+          "name": "category",
+          "type": "u64"
+        },
+        {
           "name": "price",
           "type": "u64"
         },
@@ -279,6 +283,10 @@
           {
             "name": "description",
             "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "u64"
           },
           {
             "name": "price",
@@ -497,6 +505,6 @@
     }
   ],
   "metadata": {
-    "address": "HU9CCiFbr4kvLbdbVQJDknb9m3Y5jQ3fqxiYgRQdvGMB"
+    "address": "4DYP8c9XLTW88FrfPkJ1F1Ak4hcHLQy5kZXFo5QiJuAi"
   }
 }
