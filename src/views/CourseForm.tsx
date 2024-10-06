@@ -36,42 +36,51 @@ export function CourseForm() {
   }
 
   const [course, setCourse] = useState<Course>({
-    name: "Cryptocurrency Basics",
-    description: "Learn the foundational concepts of cryptocurrency",
-    category: 1,
-    price: 1,
+    name: "Crypto Trading & Tokenomics",
+    description: "Learn advanced crypto strategies.",
+    category: 2,
+    price: 3,
     thumbnail: null,
     section_title: [
-      "What is Cryptocurency?",
-      "How It Works?",
-      "What is Tokenomics?",
+      "Market Strategies",
+      "Advanced Tokenomics",
+      "Crypto Security"
     ],
     section_description: [
-      "Define cryptocurrency basics.",
-      "Explore how it works.",
-      "Understand tokenomics.",
+      "Explore trading tactics.",
+      "Learn token models.",
+      "Mitigate security risks."
     ],
-    section_duration: [6, 14, 3],
+    section_duration: [12, 15, 10],
     section_video: [null, null, null],
     question_list: [
-      "What best describes cryptocurrency?",
-      "What technology underpins cryptocurrencies?",
-      "What does tokenomics study?",
+      "What is trading?",
+      "What is tokenomics?",
+      "What is security?"
     ],
-    answer_list: ["Digital currency", "Blockchain", "Supply and demand"],
+    answer_list: [
+      "Price analysis",
+      "Token supply",
+      "Contract risks"
+    ],
     first_answer_options: [
-      "Physical currency",
-      "Digital currency",
-      "Barter",
-      "Government money",
+      "Price analysis",
+      "Market patterns",
+      "Fundamental news",
+      "Chart reviews"
     ],
-    second_answer_options: ["Cloud", "Blockchain", "AI", "Database"],
+    second_answer_options: [
+      "Token supply",
+      "Blockchain data",
+      "Peer trading",
+      "Lending models"
+    ],
     third_answer_options: [
-      "Regulations",
-      "Supply and demand",
-      "Exchanges",
-      "Mining",
-    ],
+      "Contract risks",
+      "Hack threats",
+      "Data loss",
+      "Market delay"
+    ]
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -244,14 +253,14 @@ export function CourseForm() {
       .then(() => {
         setIsLoading(false);
         successAlert();
-        // reset();
+        reset();
         getCourse();
         console.log("Form submitted");
       })
       .catch((error) => {
         setIsLoading(false);
         failedAlert();
-        // reset();
+        reset();
         console.error("Error during submission:", error);
       });
   };

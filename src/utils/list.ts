@@ -12,10 +12,6 @@ export const navList = [
     url: "/create_course",
   },
   {
-    title: "Course",
-    url: "/course",
-  },
-  {
     title: "Profile",
     url: "/profile",
   }

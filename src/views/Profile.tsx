@@ -118,6 +118,9 @@ export const Profile = () => {
       } catch (error) {
         console.log(error);
       }
+      finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [wallet]);
@@ -161,7 +164,7 @@ export const Profile = () => {
               Course Uploaded :{" "}
             </h1>
             <div className="grid grid-cols-4 gap-3">
-            {uploadedCourse.map((course: any) => (
+              {uploadedCourse.map((course: any) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>
@@ -176,7 +179,7 @@ export const Profile = () => {
               Course Boughted :{" "}
             </h1>
             <div className="grid grid-cols-4 gap-3">
-            {boughtCourse.map((course: any) => (
+              {boughtCourse.map((course: any) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>
